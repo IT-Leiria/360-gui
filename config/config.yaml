@@ -1,0 +1,11 @@
+%YAML 1.1
+---
+log_configs:
+  log_filename: "/tmp/aroundvision/AROUNDVISION-"
+  log_level: "DEBUG"
+  log_format: "[%(asctime)s - %(filename)s:%(lineno)s -  %(funcName)s() - %(levelname)s ] %(message)s"
+  log_extension: ".log"
+stylesheet: "aroundvision.css"
+ui_mainwindow: "mainwindow.ui"
+api_endpoint: "....."
+...

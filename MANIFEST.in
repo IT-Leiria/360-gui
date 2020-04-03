@@ -1,0 +1,6 @@
+include README.md
+include MANIFEST.in
+include docs/*
+include aroundvision/views/mainwindow.ui
+include aroundvision/views/aroundvision.css
+include config/config.yaml

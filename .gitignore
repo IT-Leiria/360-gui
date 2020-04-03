@@ -1,0 +1,20 @@
+# Compiled python files
+*.py[oc]
+
+# Pytest dirs/files
+.pytest_cache
+
+# unit test / coverage reports
+.coverage
+.tox
+.coverage.*
+nosetests.xml
+coverage.xml
+htmlcov
+
+# Special dirs and files
+build/
+dist/
+bin/
+aroundvision.egg-info/
+.idea/
