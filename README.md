@@ -6,16 +6,16 @@ in different projections. Additionally, it allows the user to
 select some region of interest to visualize that area in more
 detail!
 
-####Configure application
+#### Configure application
 Fill the config.yaml file with your configurations.
 
-####How to install
+#### How to install
 ```python setup.py install```
 
-####How to run in command line
+#### How to run in command line
 ```aroundvision```
 
-####Unit Test and Code Coverage - Locally
+#### Unit Test and Code Coverage - Locally
 In base folder you just run the following command:
 
 ```tox```
