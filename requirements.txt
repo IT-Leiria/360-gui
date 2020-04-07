@@ -1,3 +1,4 @@
+cv2
 PyQt5
 confuse
 PyYAML
