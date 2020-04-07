@@ -5,6 +5,7 @@ include requirements.txt
 
 include aroundvision/views/mainwindow.ui
 include aroundvision/views/load_source.ui
+include aroundvision/views/popup.ui
 include aroundvision/views/aroundvision.css
 include aroundvision/images/pause-circle-solid.svg
 include aroundvision/images/play-circle-solid.svg
