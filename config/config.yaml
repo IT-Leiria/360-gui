@@ -7,5 +7,26 @@ log_configs:
   log_extension: ".log"
 stylesheet: "aroundvision.css"
 ui_mainwindow: "mainwindow.ui"
+ui_loadsource: "load_source.ui"
 api_endpoint: "....."
+projections:
+  - "Equirectangular"
+  - "Cube Map"
+  - "Equi-Angular Cubemap"
+  - "Pyramid format"
+qualities:
+  - "1"
+  - "2"
+  - "3"
+  - "4"
+faces_cube:
+  - "1"
+  - "2"
+  - "3"
+  - "4"
+  - "5"
+  - "6"
+icons:
+  play_icon: "play-circle-solid.svg"
+  pause_icon: "pause-circle-solid.svg"
 ...

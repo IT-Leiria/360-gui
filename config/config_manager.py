@@ -1,4 +1,8 @@
 
+"""
+
+"""
+
 import os
 import inspect
 import confuse
@@ -11,10 +15,16 @@ class ConfigurationManager:
 
     def __init__(self):
         self.base_config_path = os.path.dirname(os.path.realpath(inspect.getfile(self.__class__)))
+        self.parent_path = os.path.abspath(os.path.join(self.base_config_path, os.pardir))
         self.configuration_file = os.path.join(self.base_config_path, "config.yaml")
         self.current_date = datetime.today().strftime('%Y-%m-%d')
         self.config = self.load_config_file()
         self.log_config = self.config.get("log_configs")
+        self.icons = self.config.get("icons")
+        self.projections = self.config.get("projections")
+        self.qualities = self.config.get("qualities")
+        self.faces_cube = self.config.get("faces_cube")
+        self.api_endpoint = self.config.get("api_endpoint")
 
         # Log variables
         self.log_filename = self.log_config.get("log_filename") + self.current_date + \
@@ -28,9 +38,14 @@ class ConfigurationManager:
 
         # ui
         self.mainwindow_filename = self.config.get("ui_mainwindow")
+        self.loadsource_filename = self.config.get("ui_loadsource")
 
         # Create dir for log if not exists
         Path(self.log_dir).mkdir(parents=True, exist_ok=True)
+
+        # path icons
+        self.play_icon = self.parent_path + "/aroundvision/images/" + self.icons.get("play_icon")
+        self.pause_icon = self.parent_path + "/aroundvision/images/" + self.icons.get("pause_icon")
 
     def load_config_file(self):
         return confuse.load_yaml(self.configuration_file)

@@ -1,11 +1,9 @@
 
 """
-
+Aroundvision: This is the main package.
 """
 
 import os
-import sys
-sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 
 # Version
 version_info = (1, 0, 0, "dev0")

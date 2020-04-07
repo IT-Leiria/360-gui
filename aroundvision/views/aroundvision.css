@@ -1,0 +1,68 @@
+
+/* QMainWindow */
+QMainWindow, QMdiSubWindow
+{
+    background-color: #373737;
+}
+
+/* QWidget */
+QWidget {
+    selection-background-color: #71A9D2;
+    selection-color: rgb(255, 255, 255);
+    font-family: "Roboto";
+    font-weight: bold;
+}
+
+/* Bottom Widget*/
+QWidget#bottom_widget {
+    border-color: #DEDEDE;
+    border-width: 2px;
+    background-color: #222222;
+}
+
+/* Menu Bar */
+QMenuBar {
+    background-color: #222222;
+    color: #DEDEDE;
+    font-size:15px;
+    font-family: "Roboto";
+    font-weight: bold;
+}
+
+QMenuBar::item {
+    background-color: #222222;
+    color: #DEDEDE;
+    font-size:12px;
+    font-family: "Roboto";
+    font-weight: bold;
+}
+
+QMenu {
+    background-color: #222222;
+    color: #DEDEDE;
+    font-size:12px;
+    font-family: "Roboto";
+    font-weight: bold;
+}
+
+/* QLabel */
+QLabel {
+    color: #DEDEDE;
+    font-size:12px;
+    background-color: transparent;
+    font-family: "Roboto";
+    font-weight: bold;
+}
+
+/* Combobox */
+QComboBox {
+    background-color: #6F6F6F;
+    color: #FFFFFF;
+    font-size:12px;
+}
+
+QComboBox::item {
+    background-color: #6F6F6F;
+    selection-background-color: #7E7E7E;
+    color: #FFFFFF;
+}
