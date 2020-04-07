@@ -39,6 +39,7 @@ class ConfigurationManager:
         # ui
         self.mainwindow_filename = self.config.get("ui_mainwindow")
         self.loadsource_filename = self.config.get("ui_loadsource")
+        self.popup_filename = self.config.get("ui_popup")
 
         # Create dir for log if not exists
         Path(self.log_dir).mkdir(parents=True, exist_ok=True)

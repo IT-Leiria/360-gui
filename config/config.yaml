@@ -8,6 +8,7 @@ log_configs:
 stylesheet: "aroundvision.css"
 ui_mainwindow: "mainwindow.ui"
 ui_loadsource: "load_source.ui"
+ui_popup: "popup.ui"
 api_endpoint: "....."
 projections:
   - "Equirectangular"

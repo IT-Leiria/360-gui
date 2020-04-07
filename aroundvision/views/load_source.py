@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import QWidget
 
 from config.config_manager import CONF
 from aroundvision.models.models import Model
+from aroundvision.views.popup import PopUp
 
 
 class LoadSource(QWidget):
@@ -40,6 +41,9 @@ class LoadSource(QWidget):
         if end_point_current_text != "" and end_point_current_text != Model.api_endpoint:
             Model.api_endpoint = end_point_current_text
             self.close()
+        else:
+            popup = PopUp("Something wrong with your endpoint: " + end_point_current_text)
+            popup.exec_()
 
     @pyqtSlot()
     def cancel_slot(self):
