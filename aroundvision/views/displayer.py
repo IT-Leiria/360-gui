@@ -3,7 +3,10 @@
 
 """
 
-from PyQt5.QtGui import QPainter, QIcon, QPixmap
+import cv2
+import numpy as np
+
+from PyQt5.QtGui import QPainter, QIcon, QPixmap, QImage
 from PyQt5.QtWidgets import QWidget, QApplication, QRubberBand, QToolButton, QVBoxLayout
 from PyQt5.QtCore import QPoint, QRect, QSize, Qt
 
@@ -70,6 +73,17 @@ class ImageWidget(QWidget):
 
     def mouseReleaseEvent(self, event) -> None:
         if event.button() == Qt.LeftButton:
-            self.rubber_band.hide()
+            img_crop = self.image.copy(self.rubber_band.geometry())
+            # TODO: this must be improved, this is just an example..
+            cv2.imshow("ROI", self.convert_qimage_to_mat(img_crop))
 
         return super(ImageWidget, self).mouseReleaseEvent(event)
+
+    @staticmethod
+    def convert_qimage_to_mat(in_image):
+        """Converts a QImage into an opencv MAT format"""
+        img = in_image.convertToFormat(QImage.Format_RGB32)
+
+        ptr = img.bits()
+        ptr.setsize(img.byteCount())
+        return np.array(ptr).reshape(img.height(), img.width(), QImage.Format_RGB32)  # Copies the data
