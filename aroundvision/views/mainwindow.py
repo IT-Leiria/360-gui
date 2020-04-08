@@ -82,9 +82,11 @@ class MainWindow(QMainWindow):
             # yes, is the image is ok?
             if self.image is not None:
                 # yes, let's resize
+                # TODO: check -at the moment we resize without "KeepAspectRatio", if we want it please use
+                #  self.image.scaled(self.main_displayer.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
                 self.main_displayer.setImage(self.image.scaled(self.main_displayer.size(),
-                                                               Qt.KeepAspectRatio,
-                                                               Qt.SmoothTransformation))
+                                                               Qt.IgnoreAspectRatio, Qt.SmoothTransformation))
+
         return super().eventFilter(obj, event)
 
     def load_stylesheet(self):
@@ -118,8 +120,12 @@ class MainWindow(QMainWindow):
                 self.image = cv2.imread(image_file)
                 self.image = QImage(self.image.data, self.image.shape[1], self.image.shape[0],
                                     QImage.Format_RGB888).rgbSwapped()
+
+                # TODO: check - at the moment we scaled the image to main_displayer size without
+                #  "KeepAspectRatio", than if you want it please use the following:
+                #  self.image.scaled(self.main_displayer.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
                 self.main_displayer.setImage(self.image.scaled(self.main_displayer.size(),
-                                             Qt.KeepAspectRatio, Qt.SmoothTransformation))
+                                                               Qt.IgnoreAspectRatio, Qt.SmoothTransformation))
         else:
             # no, pause the display..
             logger.info("Pause display 360.")
