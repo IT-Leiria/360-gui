@@ -13,8 +13,6 @@ from PyQt5.QtCore import pyqtSlot, Qt, QEvent
 from PyQt5 import uic
 from PyQt5.QtGui import QImage
 
-from aroundvision.controllers.controller import Controller
-from aroundvision.models.models import Model
 from aroundvision.views.load_source import LoadSource
 from aroundvision.views.displayer import ImageWidget
 from config.config_manager import CONF
@@ -28,15 +26,17 @@ class MainWindow(QMainWindow):
 
     # Signals
 
-    def __init__(self):
+    def __init__(self, model, controller):
         logger.info("Starting building main window!")
         super().__init__()
 
         # variables
+        self.model = model
+        self.controller = controller
         self.current_dir = os.path.dirname(__file__)
         self.mainwindow_filename = os.path.join(self.current_dir, CONF.mainwindow_filename)
         self.stylesheet_filename = os.path.join(self.current_dir, CONF.stylesheet_filename)
-        self.main_displayer = ImageWidget(self)  # main images displayer
+        self.main_displayer = ImageWidget(self, self.model)  # main images displayer
         self.image = None
         self.installEventFilter(self)
 
@@ -46,7 +46,7 @@ class MainWindow(QMainWindow):
 
         # Configurations
         self.fill_bottom_bar()
-        Model.api_endpoint = CONF.api_endpoint
+        self.model.api_endpoint = CONF.api_endpoint
 
         # Add displayer to layout
         self.frame_verticalLayout.addWidget(self.main_displayer)
@@ -57,6 +57,10 @@ class MainWindow(QMainWindow):
         self.proj_comboBox.activated[str].connect(self.change_projection)
         self.quality_comboBox.activated[str].connect(self.change_quality)
         self.cube_comboBox.activated[str].connect(self.change_cube_face)
+
+        # Register callback when roi_activated value in model is changed..
+        # when this value changed we call: display_roi
+        self.model.register_callback(self.display_roi)
 
         logger.info("Main window was built!")
 
@@ -69,9 +73,9 @@ class MainWindow(QMainWindow):
         self.cube_comboBox.addItems(CONF.faces_cube)
 
         # Assign default values to model
-        Model.selected_projection = self.proj_comboBox.currentText()
-        Model.selected_quality = self.quality_comboBox.currentText()
-        Model.selected_cube_face = self.cube_comboBox.currentText()
+        self.model.selected_projection = self.proj_comboBox.currentText()
+        self.model.selected_quality = self.quality_comboBox.currentText()
+        self.model.selected_cube_face = self.cube_comboBox.currentText()
 
     def eventFilter(self, obj, event):
         """evetFilter: used to resize image when window changes.
@@ -97,17 +101,17 @@ class MainWindow(QMainWindow):
     @pyqtSlot(str)
     def change_projection(self, projection):
         """slot: change projection in model when user change projection in combobox."""
-        Model.selected_projection = projection
+        self.model.selected_projection = projection
 
     @pyqtSlot(str)
     def change_quality(self, quality):
         """slot: change quality in model when user change quality in combobox."""
-        Model.selected_quality = quality
+        self.model.selected_quality = quality
 
     @pyqtSlot(str)
     def change_cube_face(self, cube_face):
         """slot: change cube face in model when user change cube face in combobox."""
-        Model.selected_cube_face = cube_face
+        self.model.selected_cube_face = cube_face
 
     @pyqtSlot()
     def display_frames(self):
@@ -116,7 +120,7 @@ class MainWindow(QMainWindow):
         if self.main_displayer.play_toolButton.isChecked():
             # yes, wow let's get the frames and display them.
             logger.info("Display frames.")
-            for image_file in Controller.get_frames():
+            for image_file in self.controller.get_frames():
                 self.image = cv2.imread(image_file)
                 self.image = QImage(self.image.data, self.image.shape[1], self.image.shape[0],
                                     QImage.Format_RGB888).rgbSwapped()
@@ -133,5 +137,10 @@ class MainWindow(QMainWindow):
     @pyqtSlot()
     def open_load_source(self):
         """slot: display the load source window to set api endpoint.."""
-        self.load_source_window = LoadSource()
+        self.load_source_window = LoadSource(self.model)
         self.load_source_window.show()
+
+    @staticmethod
+    def display_roi(old_value, new_value):
+        # TODO: Display ROI
+        print("", old_value, new_value)

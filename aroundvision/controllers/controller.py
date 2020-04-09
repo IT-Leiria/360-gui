@@ -11,12 +11,13 @@ import queue
 image_queue = queue.Queue()     # Queue to hold images
 
 
-class Controller:
+class Controller(object):
     """
     Application Controller:
     - our iteraction with api client..
     """
-    def __init__(self, frames=None, frame=None):
+    def __init__(self, model, frames=None, frame=None):
+        self.model = model
         self.frames = frames
         self.frame = frame
 

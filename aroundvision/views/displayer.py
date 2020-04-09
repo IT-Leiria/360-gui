@@ -19,9 +19,10 @@ class ImageWidget(QWidget):
     The configure_tools is used to set play/pause buttons.
     The methods related with mouse are prepared to ROI task.
     """
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, model=None):
         super(ImageWidget, self).__init__(parent)
         self.image = None
+        self.model = model
         # select area
         self.rubber_band = QRubberBand(QRubberBand.Rectangle, self)
         self.origin = QPoint()
@@ -75,6 +76,7 @@ class ImageWidget(QWidget):
         if event.button() == Qt.LeftButton:
             img_crop = self.image.copy(self.rubber_band.geometry())
             # TODO: this must be improved, this is just an example..
+            self.model.roi_activated = True
             cv2.imshow("ROI", self.convert_qimage_to_mat(img_crop))
 
         return super(ImageWidget, self).mouseReleaseEvent(event)

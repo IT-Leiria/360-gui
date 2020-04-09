@@ -9,6 +9,8 @@ import sys
 
 from aroundvision.utils.app_utils import setup_logging
 from aroundvision.views.mainwindow import MainWindow
+from aroundvision.models.models import Model
+from aroundvision.controllers.controller import Controller
 from config.config_manager import CONF
 
 from PyQt5.QtWidgets import QApplication
@@ -28,7 +30,8 @@ def input_arguments():
 
 def run_app():
     app = QApplication(sys.argv)
-    window = MainWindow()
+    model = Model()
+    window = MainWindow(model, Controller(model))
     window.show()
     window.raise_()
     app.exit(app.exec_())
