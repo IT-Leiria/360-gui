@@ -19,19 +19,25 @@ class ImageWidget(QWidget):
     The configure_tools is used to set play/pause buttons.
     The methods related with mouse are prepared to ROI task.
     """
-    def __init__(self, parent=None, model=None):
+    def __init__(self, parent=None, model=None, settings=None):
         super(ImageWidget, self).__init__(parent)
         self.image = None
         self.model = model
+        self.settings = settings
         # select area
         self.rubber_band = QRubberBand(QRubberBand.Rectangle, self)
         self.origin = QPoint()
+        self.setLayout(QVBoxLayout())
+
+        # is settings?
+        if self.settings:
+            self.layout().addWidget(self.settings, 0, Qt.AlignTop | Qt.AlignLeft)
 
         # play/pause
-        self.setLayout(QVBoxLayout())
-        self.play_toolButton = QToolButton(self)
-        self.layout().addWidget(self.play_toolButton, 1, Qt.AlignBottom | Qt.AlignHCenter)
-        self.configure_tools()
+        if self.model:
+            self.play_toolButton = QToolButton(self)
+            self.layout().addWidget(self.play_toolButton, 1, Qt.AlignBottom | Qt.AlignHCenter)
+            self.configure_tools()
 
     def configure_tools(self):
         """Configure display tools: play and pause buttons."""
@@ -74,18 +80,21 @@ class ImageWidget(QWidget):
 
     def mouseReleaseEvent(self, event) -> None:
         if event.button() == Qt.LeftButton:
-            img_crop = self.image.copy(self.rubber_band.geometry())
             # TODO: this must be improved, this is just an example..
-            self.model.roi_activated = True
-            cv2.imshow("ROI", self.convert_qimage_to_mat(img_crop))
+            if self.model and self.image:
+                img_crop = self.image.copy(self.rubber_band.geometry())
+                self.model.roi_image = img_crop
+                self.model.roi_geometry = self.rubber_band.geometry()
+                self.model.roi_activated = True
+                # cv2.imshow("ROI", self.convert_qimage_to_mat(img_crop))
 
         return super(ImageWidget, self).mouseReleaseEvent(event)
 
-    @staticmethod
-    def convert_qimage_to_mat(in_image):
-        """Converts a QImage into an opencv MAT format"""
-        img = in_image.convertToFormat(QImage.Format_RGB32)
-
-        ptr = img.bits()
-        ptr.setsize(img.byteCount())
-        return np.array(ptr).reshape(img.height(), img.width(), QImage.Format_RGB32)  # Copies the data
+    # this was used in imshow with opencv example ..
+    #@staticmethod
+    #def convert_qimage_to_mat(in_image):
+    #    """Converts a QImage into an opencv MAT format"""
+    #    img = in_image.convertToFormat(QImage.Format_RGB32)
+    #    ptr = img.bits()
+    #    ptr.setsize(img.byteCount())
+    #    return np.array(ptr).reshape(img.height(), img.width(), QImage.Format_RGB32)  # Copies the data

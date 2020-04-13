@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>roi_settings</class>
+ <widget class="QWidget" name="roi_settings">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>404</width>
+    <height>111</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Region of Interest Settings</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget#roi_settings {
+    border-color: #DEDEDE;
+    border-width: 2px;
+    background-color: #373737;
+}
+
+QLabel {
+    color: #DEDEDE;
+    font-size:12px;
+    background-color: transparent;
+    font-family: &quot;Roboto&quot;;
+    font-weight: bold;
+}</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QFormLayout" name="formLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="bitrate_name_label">
+       <property name="text">
+        <string>Bitrate</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="quality_name_label">
+       <property name="text">
+        <string>Quality</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="quality_comboBox"/>
+     </item>
+     <item row="0" column="1">
+      <layout class="QHBoxLayout" name="settings_horizontalLayout">
+       <item>
+        <widget class="QLineEdit" name="bitrate_lineEdit">
+         <property name="placeholderText">
+          <string>Insert Bitrate</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="bitrate_units_label">
+         <property name="text">
+          <string>Units</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>98</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="save_pushButton">
+       <property name="text">
+        <string>Save</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="cancel_pushButton">
+       <property name="text">
+        <string>Cancel</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

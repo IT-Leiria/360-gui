@@ -17,7 +17,7 @@ QWidget {
 QWidget#bottom_widget {
     border-color: #DEDEDE;
     border-width: 2px;
-    background-color: #222222;
+    background-color: #2F2F2F;
 }
 
 /* Menu Bar */

@@ -14,6 +14,7 @@ from PyQt5 import uic
 from PyQt5.QtGui import QImage
 
 from aroundvision.views.load_source import LoadSource
+from aroundvision.views.region_of_interest import RegionOfInterest
 from aroundvision.views.displayer import ImageWidget
 from config.config_manager import CONF
 
@@ -38,6 +39,8 @@ class MainWindow(QMainWindow):
         self.stylesheet_filename = os.path.join(self.current_dir, CONF.stylesheet_filename)
         self.main_displayer = ImageWidget(self, self.model)  # main images displayer
         self.image = None
+        self.roi_window = None
+        self.load_source_window = None
         self.installEventFilter(self)
 
         # load ui's
@@ -47,6 +50,8 @@ class MainWindow(QMainWindow):
         # Configurations
         self.fill_bottom_bar()
         self.model.api_endpoint = CONF.api_endpoint
+        self.model.selected_roi_bitrate = CONF.roi_bitrate
+        self.model.selected_roi_quality = CONF.roi_quality
 
         # Add displayer to layout
         self.frame_verticalLayout.addWidget(self.main_displayer)
@@ -128,8 +133,17 @@ class MainWindow(QMainWindow):
                 # TODO: check - at the moment we scaled the image to main_displayer size without
                 #  "KeepAspectRatio", than if you want it please use the following:
                 #  self.image.scaled(self.main_displayer.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
-                self.main_displayer.setImage(self.image.scaled(self.main_displayer.size(),
-                                                               Qt.IgnoreAspectRatio, Qt.SmoothTransformation))
+                self.image = self.image.scaled(self.main_displayer.size(),
+                                               Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+                self.main_displayer.setImage(self.image)
+
+                # is the region of interest activated?
+                if self.model._roi_activated:
+                    # yes, let's set roi image
+                    self.model.roi_image = self.image.copy(self.model.roi_geometry).scaled(
+                        self.roi_window.roi_displayer.size(), Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+                    self.roi_window.roi_displayer.setImage(self.model.roi_image)
+
         else:
             # no, pause the display..
             logger.info("Pause display 360.")
@@ -140,7 +154,9 @@ class MainWindow(QMainWindow):
         self.load_source_window = LoadSource(self.model)
         self.load_source_window.show()
 
-    @staticmethod
-    def display_roi(old_value, new_value):
-        # TODO: Display ROI
-        print("", old_value, new_value)
+    def display_roi(self, roi_activated):
+        """Display Region of interest: create roi window and set image from saved in model.."""
+        if roi_activated:
+            self.roi_window = RegionOfInterest(self.model)
+            self.roi_window.roi_displayer.setImage(self.model.roi_image)
+            self.roi_window.show()

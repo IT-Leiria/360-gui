@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>roi</class>
+ <widget class="QWidget" name="roi">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>804</width>
+    <height>428</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Region of Interest</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget#load_source {
+    border-color: #DEDEDE;
+    border-width: 2px;
+    background-color: #373737;
+}
+
+QLabel {
+    color: #DEDEDE;
+    font-size:12px;
+    background-color: transparent;
+    font-family: &quot;Roboto&quot;;
+    font-weight: bold;
+}</string>
+  </property>
+  <layout class="QVBoxLayout" name="roi_verticalLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout"/>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

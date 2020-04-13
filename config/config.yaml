@@ -9,6 +9,8 @@ stylesheet: "aroundvision.css"
 ui_mainwindow: "mainwindow.ui"
 ui_loadsource: "load_source.ui"
 ui_popup: "popup.ui"
+roi_window: "region_of_interest.ui"
+roi_settings: "roi_settings.ui"
 api_endpoint: "....."
 projections:
   - "Equirectangular"
@@ -27,7 +29,16 @@ faces_cube:
   - "4"
   - "5"
   - "6"
+roi_bitrate_value: "22"
+roi_bitrate_units: "Mbits/s"
+roi_quality: "4"
+roi_qualities:
+  - "1"
+  - "2"
+  - "3"
+  - "4"
 icons:
   play_icon: "play-circle-solid.svg"
   pause_icon: "pause-circle-solid.svg"
+  settings_icon: "settings-solid.svg"
 ...
