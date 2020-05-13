@@ -3,12 +3,12 @@
 
 """
 
-import os
+import time
+import logging
 
-import cv2
-import queue
+import requests
 
-image_queue = queue.Queue()     # Queue to hold images
+logger = logging.getLogger(__name__)
 
 
 class Controller(object):
@@ -21,11 +21,21 @@ class Controller(object):
         self.frames = frames
         self.frame = frame
 
-    @staticmethod
-    def get_frames():
-        image_folder = "/home/na-simoes/Desktop/NunoSimoes/py_projects/pre_aroundvision/tests/imgs/"
-        images = [os.path.join(image_folder, img) for img in sorted(os.listdir(image_folder)) if img.endswith(".jpeg")]
-        return images
+    def get_frame_from_api(self):
+        start_time = time.time()
 
-    def get_frame(self, filename):
-        return cv2.imread(filename)
+        while self.model.capturing.value:
+            logger.info("Get frame from API : " + self.model.api_endpoint)
+
+            seconds_delay = self.model.frame_delay / 1000.  # convert m seconds to seconds
+            time.sleep(seconds_delay - ((time.time() - start_time) % seconds_delay))
+
+            # Get frame
+            r = requests.get(self.model.api_endpoint, stream=True)
+            logger.info("Request Status: {}!".format(str(r.status_code)))
+
+            # Is the content empty?
+            if len(r.content) > 0:
+                logger.info("The frame isn't empty, let's insert it in the images queue!")
+                self.model.image_queue.put(r.content)
+

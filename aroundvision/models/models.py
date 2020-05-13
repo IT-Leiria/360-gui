@@ -3,6 +3,7 @@
 
 """
 
+import queue
 
 class Model(object):
     """Model values saved"""
@@ -11,10 +12,15 @@ class Model(object):
         self.selected_quality = FieldValue("")
         self.selected_cube_face = FieldValue("")
         self.api_endpoint = FieldValue("")
+        self.frame_delay = FieldValue(1000)
         # region of interest vars
         self.roi_activated = FieldValue(False)
         self.roi_image = None
         self.roi_geometry = None
+
+        # main display: queue and capturing..
+        self.image_queue = queue.Queue()
+        self.capturing = FieldValue(False)
 
     def clean_roi_model(self):
         self.roi_activated.value = False

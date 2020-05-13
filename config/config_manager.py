@@ -25,6 +25,7 @@ class ConfigurationManager:
         self.qualities = self.config.get("qualities")
         self.faces_cube = self.config.get("faces_cube")
         self.api_endpoint = self.config.get("api_endpoint")
+        self.frame_delay = self.config.get("frame_delay")
         # roi settings
         self.roi_bitrate = self.config.get("roi_bitrate_value")
         self.roi_bitrate_units = self.config.get("roi_bitrate_units")

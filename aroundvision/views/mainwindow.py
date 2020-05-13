@@ -6,10 +6,10 @@
 import os
 import logging
 import queue
+import threading
 
-import cv2
 from PyQt5.QtWidgets import QMainWindow, QAction
-from PyQt5.QtCore import pyqtSlot, Qt, QEvent
+from PyQt5.QtCore import pyqtSlot, Qt, QEvent, QTimer
 from PyQt5 import uic
 from PyQt5.QtGui import QImage
 
@@ -60,6 +60,7 @@ class MainWindow(QMainWindow):
         self.model.api_endpoint = CONF.api_endpoint
         self.model.selected_roi_bitrate = CONF.roi_bitrate
         self.model.selected_roi_quality = CONF.roi_quality
+        self.model.frame_delay = CONF.frame_delay
 
         # Add displayer to layout
         self.frame_verticalLayout.addWidget(self.main_displayer)
@@ -70,6 +71,11 @@ class MainWindow(QMainWindow):
         self.proj_comboBox.activated[str].connect(self.change_projection)
         self.quality_comboBox.activated[str].connect(self.change_quality)
         self.cube_comboBox.activated[str].connect(self.change_cube_face)
+
+        # thread and timer to display images
+        self.capture_thread = None
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(lambda: self.show_frame())
 
         logger.info("Main window was built!")
 
@@ -129,28 +135,37 @@ class MainWindow(QMainWindow):
         if self.main_displayer.play_toolButton.isChecked():
             # yes, wow let's get the frames and display them.
             logger.info("Display frames.")
-            for image_file in self.controller.get_frames():
-                self.image = cv2.imread(image_file)
-                self.image = QImage(self.image.data, self.image.shape[1], self.image.shape[0],
-                                    QImage.Format_RGB888).rgbSwapped()
 
-                # TODO: check - at the moment we scaled the image to main_displayer size without
-                #  "KeepAspectRatio", than if you want it please use the following:
-                #  self.image.scaled(self.main_displayer.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
-                self.image = self.image.scaled(self.main_displayer.size(),
-                                               Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
-                self.main_displayer.setImage(self.image)
+            # Start capturing frames
+            self.model.capturing.value = True
+            self.capture_thread = threading.Thread(target=self.controller.get_frame_from_api)
+            self.capture_thread.start()
 
-                # is the region of interest activated?
-                if self.model.roi_activated.value:
-                    # yes, let's set roi image
-                    self.model.roi_image = self.image.copy(self.model.roi_geometry).scaled(
-                        self.roi_window.roi_displayer.size(), Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
-                    self.roi_window.roi_displayer.setImage(self.model.roi_image)
-
+            # Start timer to show image from queue every x seconds
+            self.timer.start(self.model.frame_delay)
         else:
             # no, pause the display..
             logger.info("Pause display 360.")
+            self.model.capturing.value = False
+            self.timer.stop()
+
+    @pyqtSlot()
+    def show_frame(self):
+        # get image from thread
+        self.image = QImage()
+        self.image.loadFromData(self.model.image_queue.get())
+
+        # scale the image to main_displayer size without "KeepAspectRatio"
+        self.image = self.image.scaled(self.main_displayer.size(),
+                                       Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+        self.main_displayer.setImage(self.image)
+
+        # is the region of interest activated?
+        if self.model.roi_activated.value:
+            # yes, let's set roi image
+            self.model.roi_image = self.image.copy(self.model.roi_geometry).scaled(
+                self.roi_window.roi_displayer.size(), Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+            self.roi_window.roi_displayer.setImage(self.model.roi_image)
 
     @pyqtSlot()
     def open_load_source(self):

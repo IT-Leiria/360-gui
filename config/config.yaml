@@ -11,7 +11,8 @@ ui_loadsource: "load_source.ui"
 ui_popup: "popup.ui"
 roi_window: "region_of_interest.ui"
 roi_settings: "roi_settings.ui"
-api_endpoint: "....."
+api_endpoint: "http://0.0.0.0:5000/video_feed"
+frame_delay: 1
 projections:
   - "Equirectangular"
   - "Cube Map"
@@ -38,7 +39,7 @@ roi_qualities:
   - "3"
   - "4"
 icons:
-  play_icon: "play-circle-solid.svg"
-  pause_icon: "pause-circle-solid.svg"
-  settings_icon: "settings-solid.svg"
+  play_icon: "play-circle-solid_ok.png"
+  pause_icon: "pause-circle-solid_ok.png"
+  settings_icon: "settings-solid_ok.png"
 ...
