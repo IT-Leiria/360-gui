@@ -7,31 +7,44 @@
 class Model(object):
     """Model values saved"""
     def __init__(self):
-        self.selected_projection = ""
-        self.selected_quality = ""
-        self.selected_cube_face = ""
-        self.api_endpoint = ""
+        self.selected_projection = FieldValue("")
+        self.selected_quality = FieldValue("")
+        self.selected_cube_face = FieldValue("")
+        self.api_endpoint = FieldValue("")
         # region of interest vars
-        self._roi_activated = False
-        self._callbacks = []
+        self.roi_activated = FieldValue(False)
         self.roi_image = None
         self.roi_geometry = None
-        # region of interest settings
-        self.selected_roi_bitrate = ""
-        self.selected_roi_quality = ""
 
     def clean_roi_model(self):
-        self._roi_activated = False
+        self.roi_activated.value = False
         self.roi_image = None
         self.roi_geometry = None
 
-    @property
-    def roi_activated(self):
-        return self._roi_activated
 
-    @roi_activated.setter
-    def roi_activated(self, new_value):
-        self._roi_activated = new_value
+class FieldValue:
+    """
+    Model variables must be FieldValue() because this object
+    is already prepared to user register callbacks (observers)
+    for this field.
+
+    Example:
+    - self.teste = field_value("TESTE") # initial value
+    - self.teste.value # access variable and assign a new value
+    - self.teste.register_callback( function ) :: function is
+      called when the variable (teste) is modified..
+    """
+    def __init__(self, initial_value):
+        self._value = initial_value
+        self._callbacks = []
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, new_value):
+        self._value = new_value
         self._notify_observers(new_value)
 
     def _notify_observers(self, new_value):

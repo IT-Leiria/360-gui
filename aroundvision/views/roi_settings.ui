@@ -26,6 +26,30 @@ QLabel {
     background-color: transparent;
     font-family: &quot;Roboto&quot;;
     font-weight: bold;
+}
+
+/*Line Edit*/
+QLineEdit {
+    background-color:#1F1F1F;
+    color: #FFFFFF;
+    font-size:12px;
+    min-height: 20px;
+    border: 1px solid #6F6F6F;
+    border-radius: 2px;
+    padding:1px 2px 1px 3px;
+}
+
+/* Combobox */
+QComboBox {
+    background-color: #6F6F6F;
+    color: #FFFFFF;
+    font-size:12px;
+}
+
+QComboBox::item {
+    background-color: #6F6F6F;
+    selection-background-color: #7E7E7E;
+    color: #FFFFFF;
 }</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">

@@ -2,7 +2,7 @@
 import os
 
 from PyQt5 import uic
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtWidgets import QWidget
 
 from config.config_manager import CONF
@@ -23,6 +23,7 @@ class LoadSource(QWidget):
         self.loadsource_filename = os.path.join(self.current_dir, CONF.loadsource_filename)
 
         uic.loadUi(self.loadsource_filename, self)
+        self.setWindowFlags(Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
 
         # Assign model value :: api endpoint
         self.api_endpoint_lineEdit.setText(self.model.api_endpoint)

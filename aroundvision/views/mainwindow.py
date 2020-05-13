@@ -47,6 +47,14 @@ class MainWindow(QMainWindow):
         uic.loadUi(self.mainwindow_filename, self)
         self.setStyleSheet(self.load_stylesheet())
 
+        # Register callback when roi_activated value in model is changed..
+        # when this value changed we call: display_roi
+        self.model.roi_activated.register_callback(self.display_roi)
+
+        # Register callback for projections because we just enable
+        # face_cube combobox when the projection is "Cube Map"
+        self.model.selected_projection.register_callback(self.face_cube)
+
         # Configurations
         self.fill_bottom_bar()
         self.model.api_endpoint = CONF.api_endpoint
@@ -63,10 +71,6 @@ class MainWindow(QMainWindow):
         self.quality_comboBox.activated[str].connect(self.change_quality)
         self.cube_comboBox.activated[str].connect(self.change_cube_face)
 
-        # Register callback when roi_activated value in model is changed..
-        # when this value changed we call: display_roi
-        self.model.register_callback(self.display_roi)
-
         logger.info("Main window was built!")
 
     def fill_bottom_bar(self):
@@ -78,9 +82,9 @@ class MainWindow(QMainWindow):
         self.cube_comboBox.addItems(CONF.faces_cube)
 
         # Assign default values to model
-        self.model.selected_projection = self.proj_comboBox.currentText()
-        self.model.selected_quality = self.quality_comboBox.currentText()
-        self.model.selected_cube_face = self.cube_comboBox.currentText()
+        self.model.selected_projection.value = self.proj_comboBox.currentText()
+        self.model.selected_quality.value = self.quality_comboBox.currentText()
+        self.model.selected_cube_face.value = self.cube_comboBox.currentText()
 
     def eventFilter(self, obj, event):
         """evetFilter: used to resize image when window changes.
@@ -106,17 +110,17 @@ class MainWindow(QMainWindow):
     @pyqtSlot(str)
     def change_projection(self, projection):
         """slot: change projection in model when user change projection in combobox."""
-        self.model.selected_projection = projection
+        self.model.selected_projection.value = projection
 
     @pyqtSlot(str)
     def change_quality(self, quality):
         """slot: change quality in model when user change quality in combobox."""
-        self.model.selected_quality = quality
+        self.model.selected_quality.value = quality
 
     @pyqtSlot(str)
     def change_cube_face(self, cube_face):
         """slot: change cube face in model when user change cube face in combobox."""
-        self.model.selected_cube_face = cube_face
+        self.model.selected_cube_face.value = cube_face
 
     @pyqtSlot()
     def display_frames(self):
@@ -138,7 +142,7 @@ class MainWindow(QMainWindow):
                 self.main_displayer.setImage(self.image)
 
                 # is the region of interest activated?
-                if self.model._roi_activated:
+                if self.model.roi_activated.value:
                     # yes, let's set roi image
                     self.model.roi_image = self.image.copy(self.model.roi_geometry).scaled(
                         self.roi_window.roi_displayer.size(), Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
@@ -160,3 +164,8 @@ class MainWindow(QMainWindow):
             self.roi_window = RegionOfInterest(self.model)
             self.roi_window.roi_displayer.setImage(self.model.roi_image)
             self.roi_window.show()
+
+    def face_cube(self, projection):
+        """when projection is "Cube Map" we enable the combobox face_cube!"""
+        is_cube = True if projection == "Cube Map" else False
+        self.cube_comboBox.setEnabled(is_cube)

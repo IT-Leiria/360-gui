@@ -2,7 +2,7 @@
 import os
 
 from PyQt5 import uic
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtWidgets import QWidget
 
 from config.config_manager import CONF
@@ -22,6 +22,7 @@ class RoiSettings(QWidget):
         self.roi_settings_filename = os.path.join(self.current_dir, CONF.roi_settings_filename)
 
         uic.loadUi(self.roi_settings_filename, self)
+        self.setWindowFlags(Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
         self.fill_ui()
 
         # Connects

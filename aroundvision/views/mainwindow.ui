@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1222</width>
+    <width>1235</width>
     <height>570</height>
    </rect>
   </property>
@@ -69,6 +69,13 @@ QPushButton:checked {
     <property name="bottomMargin">
      <number>0</number>
     </property>
+    <item>
+     <layout class="QVBoxLayout" name="frame_verticalLayout">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+     </layout>
+    </item>
     <item>
      <widget class="QWidget" name="bottom_widget" native="true">
       <property name="sizePolicy">
@@ -217,13 +224,6 @@ QPushButton:checked {
       </layout>
      </widget>
     </item>
-    <item>
-     <layout class="QVBoxLayout" name="frame_verticalLayout">
-      <property name="spacing">
-       <number>0</number>
-      </property>
-     </layout>
-    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -231,7 +231,7 @@ QPushButton:checked {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1222</width>
+     <width>1235</width>
      <height>22</height>
     </rect>
    </property>
