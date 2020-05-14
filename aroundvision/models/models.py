@@ -22,6 +22,9 @@ class Model(object):
         self.image_queue = queue.Queue()
         self.capturing = FieldValue(False)
 
+        # Streams
+        self.stream_list = FieldValue({})
+
     def clean_roi_model(self):
         self.roi_activated.value = False
         self.roi_image = None

@@ -3,7 +3,7 @@ import os
 
 from PyQt5 import uic
 from PyQt5.QtCore import pyqtSlot, Qt
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QFormLayout, QLabel
 
 from config.config_manager import CONF
 from aroundvision.views.popup import PopUp
@@ -31,6 +31,31 @@ class LoadSource(QWidget):
         # Connects
         self.cancel_pushButton.clicked.connect(self.cancel_slot)
         self.save_pushButton.clicked.connect(self.save_sources_slot)
+
+        self.create_stream_list()
+        self.model.stream_list.register_callback(self.create_stream_list)
+
+    def create_stream_list(self):
+        """Create stream list, depends from get_strem_list GET values."""
+        self.stream_list_layout.addWidget(QLabel("Stream List:"))
+
+        for i, s in enumerate(self.model.stream_list.value):
+            # Create Widget and fromLayout
+            wid = QWidget()
+            wid.setStyleSheet("background-color: #222222;")
+            form = QFormLayout()
+
+            # add Row for values: index, name, size, bytes per pixel, number of layers
+            stream = self.model.stream_list.value[s]
+            form.addRow(QLabel("Stream Index: "), QLabel(str(i)))
+            form.addRow(QLabel("Name: "), QLabel(stream["name"]))
+            form.addRow(QLabel("Size: "), QLabel(str(stream["width"]) + " x " + str(stream["height"])))
+            form.addRow(QLabel("Bytes per Pixel: "), QLabel(str(stream["bytes_per_pixel"])))
+            form.addRow(QLabel("Number of layers: "), QLabel(str(stream["number_of_layers"])))
+
+            # add to layout
+            wid.setLayout(form)
+            self.stream_list_layout.addWidget(wid)
 
     @pyqtSlot()
     def open_load_source(self):

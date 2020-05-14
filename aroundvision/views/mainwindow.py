@@ -5,13 +5,11 @@
 
 import os
 import logging
-import queue
 import threading
 
 from PyQt5.QtWidgets import QMainWindow, QAction
 from PyQt5.QtCore import pyqtSlot, Qt, QEvent, QTimer
 from PyQt5 import uic
-from PyQt5.QtGui import QImage
 
 from aroundvision.views.load_source import LoadSource
 from aroundvision.views.region_of_interest import RegionOfInterest
@@ -19,7 +17,6 @@ from aroundvision.views.displayer import ImageWidget
 from config.config_manager import CONF
 
 logger = logging.getLogger(__name__)
-image_queue = queue.Queue()     # Queue to hold images
 
 
 class MainWindow(QMainWindow):
@@ -152,8 +149,8 @@ class MainWindow(QMainWindow):
     @pyqtSlot()
     def show_frame(self):
         # get image from thread
-        self.image = QImage()
-        self.image.loadFromData(self.model.image_queue.get())
+        self.image = self.model.image_queue.get()
+        #self.image.loadFromData(img)
 
         # scale the image to main_displayer size without "KeepAspectRatio"
         self.image = self.image.scaled(self.main_displayer.size(),

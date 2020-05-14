@@ -20,17 +20,26 @@ class ConfigurationManager:
         self.current_date = datetime.today().strftime('%Y-%m-%d')
         self.config = self.load_config_file()
         self.log_config = self.config.get("log_configs")
+        self.api_config = self.config.get("api_configs")
+        self.ui_config = self.config.get("ui_configs")
         self.icons = self.config.get("icons")
         self.projections = self.config.get("projections")
         self.qualities = self.config.get("qualities")
         self.faces_cube = self.config.get("faces_cube")
-        self.api_endpoint = self.config.get("api_endpoint")
         self.frame_delay = self.config.get("frame_delay")
+
         # roi settings
         self.roi_bitrate = self.config.get("roi_bitrate_value")
         self.roi_bitrate_units = self.config.get("roi_bitrate_units")
         self.roi_qualities = self.config.get("roi_qualities")
         self.roi_quality = self.config.get("roi_quality")
+
+        # API configs
+        self.api_endpoint = self.api_config.get("api_endpoint")
+        self.api_get_stream_list_path = self.api_endpoint + self.api_config.get("api_stream_list_path")
+        self.api_select_stream_path = self.api_endpoint + self.api_config.get("api_select_stream_path")
+        self.api_get_frame_raw_path = self.api_endpoint + self.api_config.get("api_get_frame_raw_path")
+        self.api_selected_stream_idx = self.api_config.get("api_selected_stream_idx")
 
         # Log variables
         self.log_filename = self.log_config.get("log_filename") + self.current_date + \
@@ -40,14 +49,14 @@ class ConfigurationManager:
         self.log_level = self.log_config.get("log_level")
 
         # stylesheet
-        self.stylesheet_filename = self.config.get("stylesheet")
+        self.stylesheet_filename = self.ui_config.get("stylesheet")
 
         # ui
-        self.mainwindow_filename = self.config.get("ui_mainwindow")
-        self.loadsource_filename = self.config.get("ui_loadsource")
-        self.popup_filename = self.config.get("ui_popup")
-        self.roi_filename = self.config.get("roi_window")
-        self.roi_settings_filename = self.config.get("roi_settings")
+        self.mainwindow_filename = self.ui_config.get("ui_mainwindow")
+        self.loadsource_filename = self.ui_config.get("ui_loadsource")
+        self.popup_filename = self.ui_config.get("ui_popup")
+        self.roi_filename = self.ui_config.get("roi_window")
+        self.roi_settings_filename = self.ui_config.get("roi_settings")
 
         # Create dir for log if not exists
         Path(self.log_dir).mkdir(parents=True, exist_ok=True)
