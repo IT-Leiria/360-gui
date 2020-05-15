@@ -54,7 +54,6 @@ class MainWindow(QMainWindow):
 
         # Configurations
         self.fill_bottom_bar()
-        self.model.api_endpoint = CONF.api_endpoint
         self.model.selected_roi_bitrate = CONF.roi_bitrate
         self.model.selected_roi_quality = CONF.roi_quality
         self.model.frame_delay = CONF.frame_delay
@@ -167,7 +166,7 @@ class MainWindow(QMainWindow):
     @pyqtSlot()
     def open_load_source(self):
         """slot: display the load source window to set api endpoint.."""
-        self.load_source_window = LoadSource(self.model)
+        self.load_source_window = LoadSource(self.model, self.controller)
         self.load_source_window.show()
 
     def display_roi(self, roi_activated):

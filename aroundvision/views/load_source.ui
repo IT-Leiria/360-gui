@@ -60,7 +60,7 @@ QLineEdit {
     <number>9</number>
    </property>
    <property name="sizeConstraint">
-    <enum>QLayout::SetDefaultConstraint</enum>
+    <enum>QLayout::SetFixedSize</enum>
    </property>
    <item>
     <layout class="QFormLayout" name="formLayout">
@@ -71,18 +71,29 @@ QLineEdit {
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="api_endpoint_lineEdit"/>
-     </item>
      <item row="1" column="0">
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="stream_index_label">
        <property name="text">
         <string>Stream Index</string>
        </property>
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QLineEdit" name="lineEdit"/>
+      <widget class="QLineEdit" name="stream_index_lineEdit"/>
+     </item>
+     <item row="0" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QLineEdit" name="api_endpoint_lineEdit"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="connect_pushButton">
+         <property name="text">
+          <string>Connect</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>

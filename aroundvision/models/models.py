@@ -5,6 +5,7 @@
 
 import queue
 
+
 class Model(object):
     """Model values saved"""
     def __init__(self):
@@ -23,7 +24,9 @@ class Model(object):
         self.capturing = FieldValue(False)
 
         # Streams
+        self.api_connected = FieldValue(True)
         self.stream_list = FieldValue({})
+        self.stream_index = FieldValue("0")
 
     def clean_roi_model(self):
         self.roi_activated.value = False

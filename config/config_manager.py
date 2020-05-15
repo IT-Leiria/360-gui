@@ -36,9 +36,9 @@ class ConfigurationManager:
 
         # API configs
         self.api_endpoint = self.api_config.get("api_endpoint")
-        self.api_get_stream_list_path = self.api_endpoint + self.api_config.get("api_stream_list_path")
-        self.api_select_stream_path = self.api_endpoint + self.api_config.get("api_select_stream_path")
-        self.api_get_frame_raw_path = self.api_endpoint + self.api_config.get("api_get_frame_raw_path")
+        self.api_get_stream_list_path = self.api_config.get("api_stream_list_path")
+        self.api_select_stream_path = self.api_config.get("api_select_stream_path")
+        self.api_get_frame_raw_path = self.api_config.get("api_get_frame_raw_path")
         self.api_selected_stream_idx = self.api_config.get("api_selected_stream_idx")
 
         # Log variables
