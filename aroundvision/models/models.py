@@ -13,7 +13,7 @@ class Model(object):
         self.selected_quality = FieldValue("")
         self.selected_cube_face = FieldValue("")
         self.api_endpoint = FieldValue("")
-        self.frame_delay = FieldValue(1000)
+        self.frame_rate = FieldValue(1000)
         # region of interest vars
         self.roi_activated = FieldValue(False)
         self.roi_image = None
@@ -27,6 +27,13 @@ class Model(object):
         self.api_connected = FieldValue(True)
         self.stream_list = FieldValue({})
         self.stream_index = FieldValue("0")
+
+        # Frame variables
+        self.width = FieldValue(None)
+        self.height = FieldValue(None)
+        self.shape = FieldValue(None)
+        self.frame_len = FieldValue(None)
+        self.bytes_per_line = FieldValue(None)
 
     def clean_roi_model(self):
         self.roi_activated.value = False

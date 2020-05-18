@@ -26,7 +26,7 @@ class ConfigurationManager:
         self.projections = self.config.get("projections")
         self.qualities = self.config.get("qualities")
         self.faces_cube = self.config.get("faces_cube")
-        self.frame_delay = self.config.get("frame_delay")
+        self.frame_rate = self.config.get("frame_rate")
 
         # roi settings
         self.roi_bitrate = self.config.get("roi_bitrate_value")
@@ -38,6 +38,7 @@ class ConfigurationManager:
         self.api_endpoint = self.api_config.get("api_endpoint")
         self.api_get_stream_list_path = self.api_config.get("api_stream_list_path")
         self.api_select_stream_path = self.api_config.get("api_select_stream_path")
+        self.api_get_frame_info = self.api_config.get("api_get_frame_info")
         self.api_get_frame_raw_path = self.api_config.get("api_get_frame_raw_path")
         self.api_selected_stream_idx = self.api_config.get("api_selected_stream_idx")
 

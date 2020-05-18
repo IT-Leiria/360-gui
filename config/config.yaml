@@ -16,9 +16,10 @@ api_configs:
   api_endpoint: "http://0.0.0.0:5000/"
   api_stream_list_path: "get_stream_list"
   api_select_stream_path: "select_stream"
+  api_get_frame_info: "get_frame_info"
   api_get_frame_raw_path: "get_frame_raw"
   api_selected_stream_idx: "0"
-frame_delay: 0.001
+frame_rate: 30 # fps
 projections:
   - "Equirectangular"
   - "Cube Map"

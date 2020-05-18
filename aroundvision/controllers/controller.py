@@ -6,10 +6,13 @@
 import time
 import logging
 from ast import literal_eval
+import urllib
+
 from config.config_manager import CONF
 
 import requests
-from PIL import Image
+import numpy as np
+import cv2
 
 logger = logging.getLogger(__name__)
 
@@ -23,9 +26,11 @@ class Controller(object):
         self.model = model
 
         # Assign values from configurations
+        self.session = requests.Session()
         self.model.api_endpoint.value = CONF.api_endpoint
         self.model.stream_index.value = CONF.api_selected_stream_idx
 
+        # Request initial data from configuration
         self.get_stream_list()
         self.select_stream()
 
@@ -35,26 +40,20 @@ class Controller(object):
         while self.model.capturing.value:
             logger.info("Get frame from API : " + self.model.api_endpoint.value)
 
-            seconds_delay = self.model.frame_delay / 1000.  # convert m seconds to seconds
+            seconds_delay = self.model.frame_rate / 1000.  # convert m seconds to seconds
             time.sleep(seconds_delay - ((time.time() - start_time) % seconds_delay))
 
             # Get frame
-            r = requests.get(self.model.api_endpoint.value + CONF.api_get_frame_raw_path, stream=True)
-            logger.info("Request Status: {}!".format(str(r.status_code)))
+            r = urllib.request.urlopen(self.model.api_endpoint.value + CONF.api_get_frame_raw_path)
+            content = r.read()
+            size_content = len(content)
+            logger.info("Request Status: {}!".format(str(r.status)))
 
             # Is the content empty?
-            if len(r.content) == 11059200: # > 0
-                try:
-                    logger.info("The frame isn't empty, let's insert it in the images queue!")
-                    print("insert img ", len(r.content))
-                    i = Image.frombytes("L", (3840, 1920), r.content, decoder_name="raw")
-                    self.model.image_queue.put(i.toqimage())  # .tobytes())  # r.content)
-
-                except Exception as e:
-                    self.model.capturing.value = False
-                    print("Exception :: ", e)
-            else:
-                print("Not Image ", r.status_code)
+            if size_content == self.model.frame_len.value:
+                logger.info("The frame isn't empty, let's insert it in the images queue!")
+                print("insert img ", size_content, self.model.frame_len.value)
+                self.model.image_queue.put(self.get_rgb_from_yuv(content))
 
     def select_stream(self):
         """Select Stream index in API"""
@@ -63,8 +62,30 @@ class Controller(object):
         logger.info("Selecting stream in API {0}".format(select_stream_path))
 
         try:
-            r = requests.get(select_stream_path, stream=True)
+            r = self.session.get(select_stream_path, stream=True)
+            self.get_frame_info()
+
             logger.info("Select stream status {0}!".format(r.status_code))
+        except requests.exceptions.RequestException as err:
+            logger.warning("Connection Error {0}".format(str(err)))
+
+    def get_frame_info(self):
+        """Get frame info from selected stream on API"""
+        get_frame_info_path = self.model.api_endpoint.value + CONF.api_get_frame_info
+        logger.info("Getting frame info in API {0}".format(get_frame_info_path))
+
+        try:
+            r = self.session.get(get_frame_info_path, stream=True)
+
+            # build frame info
+            frame_info = literal_eval(r.content.decode())
+            self.model.width.value = frame_info["width"]
+            self.model.height.value = frame_info["height"]
+            self.model.shape.value = (int(self.model.height.value * 1.5), self.model.width.value)
+            self.model.frame_len.value = int(self.model.width.value * self.model.height.value * 3 / 2)
+            self.model.bytes_per_line.value = 3 * self.model.width.value
+
+            logger.info("Get frame info status {0}!".format(r.status_code))
         except requests.exceptions.RequestException as err:
             logger.warning("Connection Error {0}".format(str(err)))
 
@@ -77,7 +98,7 @@ class Controller(object):
 
         try:
             # get stream list from API
-            r = requests.get(self.model.api_endpoint.value + CONF.api_get_stream_list_path, stream=True)
+            r = self.session.get(self.model.api_endpoint.value + CONF.api_get_stream_list_path, stream=True)
 
             # update our model with values
             for i, s in enumerate(literal_eval(r.content.decode())):
@@ -95,3 +116,7 @@ class Controller(object):
             self.model.api_connected.value = False
             self.model.stream_list.value.clear()
             return str(err)
+
+    def get_rgb_from_yuv(self, raw):
+        yuv = np.frombuffer(raw, dtype=np.uint8).reshape(self.model.shape.value)
+        return cv2.cvtColor(yuv, cv2.COLOR_YUV420P2BGR)  # YV12)

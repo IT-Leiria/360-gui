@@ -7,8 +7,9 @@ import os
 import logging
 import threading
 
+from PyQt5.QtGui import QImage
 from PyQt5.QtWidgets import QMainWindow, QAction
-from PyQt5.QtCore import pyqtSlot, Qt, QEvent, QTimer
+from PyQt5.QtCore import pyqtSlot, Qt, QEvent, QTimer, QThread
 from PyQt5 import uic
 
 from aroundvision.views.load_source import LoadSource
@@ -56,7 +57,7 @@ class MainWindow(QMainWindow):
         self.fill_bottom_bar()
         self.model.selected_roi_bitrate = CONF.roi_bitrate
         self.model.selected_roi_quality = CONF.roi_quality
-        self.model.frame_delay = CONF.frame_delay
+        self.model.frame_rate = CONF.frame_rate
 
         # Add displayer to layout
         self.frame_verticalLayout.addWidget(self.main_displayer)
@@ -138,7 +139,7 @@ class MainWindow(QMainWindow):
             self.capture_thread.start()
 
             # Start timer to show image from queue every x seconds
-            self.timer.start(self.model.frame_delay)
+            self.timer.start(self.model.frame_rate)
         else:
             # no, pause the display..
             logger.info("Pause display 360.")
@@ -148,12 +149,13 @@ class MainWindow(QMainWindow):
     @pyqtSlot()
     def show_frame(self):
         # get image from thread
-        self.image = self.model.image_queue.get()
-        #self.image.loadFromData(img)
+        img = self.model.image_queue.get()
+        self.image = QImage(img.data, self.model.width.value, self.model.height.value,
+                            self.model.bytes_per_line.value, QImage.Format_RGB888)
 
         # scale the image to main_displayer size without "KeepAspectRatio"
-        self.image = self.image.scaled(self.main_displayer.size(),
-                                       Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+        self.image = self.image.scaled(self.main_displayer.size(),# Qt.KeepAspectRatio)
+                                       Qt.IgnoreAspectRatio)  # , Qt.SmoothTransformation) # Qt.KeepAspectRatio)
         self.main_displayer.setImage(self.image)
 
         # is the region of interest activated?
