@@ -10,6 +10,7 @@ class Model(object):
     """Model values saved"""
     def __init__(self):
         self.selected_projection = FieldValue("")
+        self.selected_projection_api = FieldValue("")
         self.selected_quality = FieldValue("")
         self.selected_cube_face = FieldValue("")
         self.api_endpoint = FieldValue("")

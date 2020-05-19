@@ -44,7 +44,8 @@ class Controller(object):
             time.sleep(seconds_delay - ((time.time() - start_time) % seconds_delay))
 
             # Get frame
-            r = urllib.request.urlopen(self.model.api_endpoint.value + CONF.api_get_frame_raw_path)
+            r = urllib.request.urlopen(self.model.api_endpoint.value + CONF.api_get_frame_raw_path + "?projection=" +
+                                       self.model.selected_projection_api.value)
             content = r.read()
             size_content = len(content)
             logger.info("Request Status: {}!".format(str(r.status)))
@@ -52,7 +53,6 @@ class Controller(object):
             # Is the content empty?
             if size_content == self.model.frame_len.value:
                 logger.info("The frame isn't empty, let's insert it in the images queue!")
-                print("insert img ", size_content, self.model.frame_len.value)
                 self.model.image_queue.put(self.get_rgb_from_yuv(content))
 
     def select_stream(self):
@@ -71,7 +71,8 @@ class Controller(object):
 
     def get_frame_info(self):
         """Get frame info from selected stream on API"""
-        get_frame_info_path = self.model.api_endpoint.value + CONF.api_get_frame_info
+        get_frame_info_path = self.model.api_endpoint.value + CONF.api_get_frame_info + \
+                              "?projection=" + self.model.selected_projection_api.value
         logger.info("Getting frame info in API {0}".format(get_frame_info_path))
 
         try:

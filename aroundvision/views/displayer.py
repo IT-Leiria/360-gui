@@ -55,7 +55,6 @@ class ImageWidget(QWidget):
 
     def setImage(self, image):
         self.image = image
-        self.setMinimumSize(image.size())
         self.update()
         QApplication.processEvents()  # refreshing the event queue
 
