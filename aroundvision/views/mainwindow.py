@@ -9,12 +9,13 @@ import threading
 
 from PyQt5.QtGui import QImage
 from PyQt5.QtWidgets import QMainWindow, QAction
-from PyQt5.QtCore import pyqtSlot, Qt, QEvent, QTimer, QThread
+from PyQt5.QtCore import pyqtSlot, Qt, QEvent, QThread, pyqtSignal
 from PyQt5 import uic
 
 from aroundvision.views.load_source import LoadSource
 from aroundvision.views.region_of_interest import RegionOfInterest
 from aroundvision.views.displayer import ImageWidget
+from aroundvision.views import qtimer_worker
 from config.config_manager import CONF
 
 logger = logging.getLogger(__name__)
@@ -22,8 +23,9 @@ logger = logging.getLogger(__name__)
 
 class MainWindow(QMainWindow):
     """AroundVision main window :: improve description"""
-
     # Signals
+    start_timer = pyqtSignal()
+    stop_timer = pyqtSignal()
 
     def __init__(self, model, controller):
         logger.info("Starting building main window!")
@@ -71,8 +73,12 @@ class MainWindow(QMainWindow):
 
         # thread and timer to display images
         self.capture_thread = None
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(lambda: self.show_frame())
+        self.timer_thread = QThread()
+        self.timer = qtimer_worker.TimerWorker(self.model.frame_rate, self.show_frame)
+        self.timer.moveToThread(self.timer_thread)
+        self.stop_timer.connect(self.timer.stop)
+        self.start_timer.connect(self.timer.start)
+        self.timer_thread.start()
 
         logger.info("Main window was built!")
 
@@ -91,15 +97,14 @@ class MainWindow(QMainWindow):
 
     def eventFilter(self, obj, event):
         """evetFilter: used to resize image when window changes.
-        TODO: improve this behaviour in further devs
         """
         # resize event?
         if event.type() == QEvent.Resize:
             # yes, is the image is ok?
             if self.image is not None:
                 # yes, let's resize
-                # TODO: check -at the moment we resize without "KeepAspectRatio", if we want it please use
-                #  self.image.scaled(self.main_displayer.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                # at the moment we resize without "KeepAspectRatio", if we want it please use
+                # self.image.scaled(self.main_displayer.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
                 self.main_displayer.setImage(self.image.scaled(self.main_displayer.size(),
                                                                Qt.IgnoreAspectRatio, Qt.SmoothTransformation))
 
@@ -135,35 +140,37 @@ class MainWindow(QMainWindow):
 
             # Start capturing frames
             self.model.capturing.value = True
-            self.capture_thread = threading.Thread(target=self.controller.get_frame_from_api)
+            self.capture_thread = threading.Thread(name="capturing", target=self.controller.get_frame_from_api)
             self.capture_thread.start()
 
             # Start timer to show image from queue every x seconds
-            self.timer.start(self.model.frame_rate)
+            self.start_timer.emit()
         else:
             # no, pause the display..
             logger.info("Pause display 360.")
             self.model.capturing.value = False
-            self.timer.stop()
+            self.stop_timer.emit()
 
     @pyqtSlot()
     def show_frame(self):
         # get image from thread
-        img = self.model.image_queue.get()
-        self.image = QImage(img.data, self.model.width.value, self.model.height.value,
-                            self.model.bytes_per_line.value, QImage.Format_RGB888)
+        try:
+            img = self.model.image_queue.get(False)
+            self.image = QImage(img.data, self.model.width.value, self.model.height.value,
+                                self.model.bytes_per_line.value, QImage.Format_RGB888)
 
-        # scale the image to main_displayer size without "KeepAspectRatio"
-        self.image = self.image.scaled(self.main_displayer.size(),# Qt.KeepAspectRatio)
-                                       Qt.IgnoreAspectRatio)  # , Qt.SmoothTransformation) # Qt.KeepAspectRatio)
-        self.main_displayer.setImage(self.image)
+            # scale the image to main_displayer size without "KeepAspectRatio"
+            self.image = self.image.scaled(self.main_displayer.size(), Qt.IgnoreAspectRatio)
+            self.main_displayer.setImage(self.image)
 
-        # is the region of interest activated?
-        if self.model.roi_activated.value:
-            # yes, let's set roi image
-            self.model.roi_image = self.image.copy(self.model.roi_geometry).scaled(
-                self.roi_window.roi_displayer.size(), Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
-            self.roi_window.roi_displayer.setImage(self.model.roi_image)
+            # is the region of interest activated?
+            if self.model.roi_activated.value:
+                # yes, let's set roi image
+                self.model.roi_image = self.image.copy(self.model.roi_geometry).scaled(
+                    self.roi_window.roi_displayer.size(), Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+                self.roi_window.roi_displayer.setImage(self.model.roi_image)
+        except Exception as e:
+            logger.info("Queue empty " + str(e))
 
     @pyqtSlot()
     def open_load_source(self):
