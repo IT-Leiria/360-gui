@@ -3,7 +3,6 @@
 
 """
 
-import time
 import logging
 from ast import literal_eval
 import urllib
@@ -35,13 +34,8 @@ class Controller(object):
         self.select_stream()
 
     def get_frame_from_api(self):
-        start_time = time.time()
-        # TODO: improve
         while self.model.capturing.value:
             logger.info("Get frame from API : " + self.model.api_endpoint.value)
-
-            seconds_delay = self.model.frame_rate / 1000.  # convert m seconds to seconds
-            time.sleep(seconds_delay - ((time.time() - start_time) % seconds_delay))
 
             # Get frame
             r = urllib.request.urlopen(self.model.api_endpoint.value + CONF.api_get_frame_raw_path + "?projection=" +
@@ -50,9 +44,9 @@ class Controller(object):
             size_content = len(content)
             logger.info("Request Status: {}!".format(str(r.status)))
 
-            # Is the content empty?
+            # Is the content has the expected size?
             if size_content == self.model.frame_len.value:
-                logger.info("The frame isn't empty, let's insert it in the images queue!")
+                logger.info("The frame has the expected size, let's insert it in the images queue!")
                 self.model.image_queue.put(self.get_rgb_from_yuv(content))
 
     def select_stream(self):
@@ -78,15 +72,16 @@ class Controller(object):
         try:
             r = self.session.get(get_frame_info_path, stream=True)
 
-            # build frame info
-            frame_info = literal_eval(r.content.decode())
-            self.model.width.value = frame_info["width"]
-            self.model.height.value = frame_info["height"]
-            self.model.shape.value = (int(self.model.height.value * 1.5), self.model.width.value)
-            self.model.frame_len.value = int(self.model.width.value * self.model.height.value * 3 / 2)
-            self.model.bytes_per_line.value = 3 * self.model.width.value
+            if r.status_code == 200:
+                # build frame info
+                frame_info = literal_eval(r.content.decode())
+                self.model.width.value = frame_info["width"]
+                self.model.height.value = frame_info["height"]
+                self.model.shape.value = (int(self.model.height.value * 1.5), self.model.width.value)
+                self.model.frame_len.value = int(self.model.width.value * self.model.height.value * 3 / 2)
+                self.model.bytes_per_line.value = 3 * self.model.width.value
 
-            logger.info("Get frame info status {0}!".format(r.status_code))
+                logger.info("Get frame info status {0}!".format(r.status_code))
         except requests.exceptions.RequestException as err:
             logger.warning("Connection Error {0}".format(str(err)))
 
