@@ -241,11 +241,29 @@ QPushButton:checked {
     </property>
     <addaction name="actionLoad_Source"/>
    </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionHelp"/>
+    <addaction name="actionAbout"/>
+   </widget>
    <addaction name="menuLoad_Source"/>
+   <addaction name="menuHelp"/>
   </widget>
   <action name="actionLoad_Source">
    <property name="text">
     <string>Load Source</string>
+   </property>
+  </action>
+  <action name="actionHelp">
+   <property name="text">
+    <string>Help</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
    </property>
   </action>
  </widget>

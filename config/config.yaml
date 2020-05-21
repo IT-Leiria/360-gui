@@ -12,6 +12,7 @@ ui_configs:
   ui_popup: "popup.ui"
   roi_window: "region_of_interest.ui"
   roi_settings: "roi_settings.ui"
+  about_window: "about.ui"
 api_configs:
   api_endpoint: "http://0.0.0.0:5000/"
   api_stream_list_path: "get_stream_list"
@@ -60,4 +61,6 @@ icons:
   play_icon: "play-circle-solid_ok.png"
   pause_icon: "pause-circle-solid_ok.png"
   settings_icon: "settings-solid_ok.png"
+  about_logo: "csw_logo.png"
+doc_url: "docs/build/html/index.html"
 ...

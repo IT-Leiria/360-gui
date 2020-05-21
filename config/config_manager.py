@@ -27,6 +27,7 @@ class ConfigurationManager:
         self.qualities = self.config.get("qualities")
         self.faces_cube = self.config.get("faces_cube")
         self.frame_rate = self.config.get("frame_rate")
+        self.docs_url = os.path.join(self.parent_path, "aroundvision", self.config.get("doc_url"))
 
         # roi settings
         self.roi_bitrate = self.config.get("roi_bitrate_value")
@@ -58,6 +59,7 @@ class ConfigurationManager:
         self.popup_filename = self.ui_config.get("ui_popup")
         self.roi_filename = self.ui_config.get("roi_window")
         self.roi_settings_filename = self.ui_config.get("roi_settings")
+        self.about_filename = self.ui_config.get("about_window")
 
         # Create dir for log if not exists
         Path(self.log_dir).mkdir(parents=True, exist_ok=True)
@@ -66,6 +68,7 @@ class ConfigurationManager:
         self.play_icon = self.parent_path + "/aroundvision/images/" + self.icons.get("play_icon")
         self.pause_icon = self.parent_path + "/aroundvision/images/" + self.icons.get("pause_icon")
         self.settings_icon = self.parent_path + "/aroundvision/images/" + self.icons.get("settings_icon")
+        self.about_logo = self.parent_path + "/aroundvision/images/" + self.icons.get("about_logo")
 
     def load_config_file(self):
         return confuse.load_yaml(self.configuration_file)

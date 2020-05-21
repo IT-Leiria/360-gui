@@ -6,11 +6,13 @@
 import os
 import logging
 
-from PyQt5.QtWidgets import QMainWindow, QAction
-from PyQt5.QtCore import pyqtSlot, QEvent, pyqtSignal
+from PyQt5.QtGui import QDesktopServices
+from PyQt5.QtWidgets import QMainWindow, QMessageBox
+from PyQt5.QtCore import pyqtSlot, QEvent, pyqtSignal, QUrl
 from PyQt5 import uic
 
 from aroundvision.views.load_source import LoadSource
+from aroundvision.views.about import About
 from aroundvision.views.video_player import VideoPlayer
 from config.config_manager import CONF
 
@@ -33,7 +35,6 @@ class MainWindow(QMainWindow):
         self.mainwindow_filename = os.path.join(self.current_dir, CONF.mainwindow_filename)
         self.stylesheet_filename = os.path.join(self.current_dir, CONF.stylesheet_filename)
 
-        self.load_source_window = None
         self.installEventFilter(self)
 
         # load ui's
@@ -60,8 +61,11 @@ class MainWindow(QMainWindow):
 
     def _set_connects(self):
         """Set connects here"""
-        # main window connects
-        self.menuLoad_Source.triggered[QAction].connect(self.open_load_source)
+        # top bar
+        self.actionLoad_Source.triggered.connect(self.open_load_source)
+        self.actionHelp.triggered.connect(self.open_help)
+        self.actionAbout.triggered.connect(self.open_about)
+        # bottom bar
         self.proj_comboBox.activated[str].connect(self.change_projection)
         self.quality_comboBox.activated[str].connect(self.change_quality)
         self.cube_comboBox.activated[str].connect(self.change_cube_face)
@@ -121,6 +125,18 @@ class MainWindow(QMainWindow):
         """slot: display the load source window to set api endpoint.."""
         self.load_source_window = LoadSource(self.model, self.controller)
         self.load_source_window.show()
+
+    @pyqtSlot()
+    def open_about(self):
+        """Slot: display about window!"""
+        self.about_window = About()
+        self.about_window.show()
+
+    @pyqtSlot()
+    def open_help(self):
+        """Open aroundvision docs in browser."""
+        if not QDesktopServices.openUrl(QUrl(CONF.docs_url)):
+            QMessageBox.warning(self, 'Open Url', 'Could not open url!')
 
     def face_cube(self, projection):
         """when projection is "Cube Map" we enable the combobox face_cube!"""

@@ -1,0 +1,621 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Welcome to aroundvision’s documentation! &mdash; aroundvision 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="#" class="icon icon-home"> aroundvision
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Welcome to aroundvision’s documentation!</a></li>
+<li><a class="reference internal" href="#configuration-of-project-environment">Configuration of Project Environment</a><ul>
+<li><a class="reference internal" href="#overview-on-how-to-run-this-application">Overview on How to Run this application</a><ul>
+<li><a class="reference internal" href="#setup-procedure">Setup Procedure</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#code-documentation">Code Documentation</a><ul>
+<li><a class="reference internal" href="#module-aroundvision.main">Aroundvision main</a></li>
+<li><a class="reference internal" href="#aroundvision-views">Aroundvision views</a></li>
+<li><a class="reference internal" href="#module-aroundvision.models.models">Aroundvision models</a></li>
+<li><a class="reference internal" href="#module-aroundvision.controllers.controller">Aroundvision controllers</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">aroundvision</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>Welcome to aroundvision’s documentation!</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="welcome-to-aroundvision-s-documentation">
+<h1>Welcome to aroundvision’s documentation!<a class="headerlink" href="#welcome-to-aroundvision-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>The AROUNDVISION is a tool to visualize 360 images from an API
+in different projections. Additionally, it allows the user to
+select some region of interest to visualize that area in more
+detail!</p>
+</div>
+<div class="section" id="configuration-of-project-environment">
+<h1>Configuration of Project Environment<a class="headerlink" href="#configuration-of-project-environment" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview-on-how-to-run-this-application">
+<h2>Overview on How to Run this application<a class="headerlink" href="#overview-on-how-to-run-this-application" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Create a Python virtual environment to install the packages required</p></li>
+<li><p>How to install</p></li>
+<li><p>Fill the configuration file</p></li>
+<li><p>How to run in command line</p></li>
+<li><p>Unit Test and Code Coverage - Locally</p></li>
+</ol>
+<div class="section" id="setup-procedure">
+<h3>Setup Procedure<a class="headerlink" href="#setup-procedure" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><dl>
+<dt><strong>Create a Python virtual environment to install the packages required</strong></dt><dd><ul>
+<li><p>Install virtualenv:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">virtualenv</span>
+</pre></div>
+</div>
+</li>
+<li><p>Create virtualenv:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">virtualenv</span> <span class="o">-</span><span class="n">p</span> <span class="n">python3</span> <span class="o">&lt;</span><span class="n">name</span> <span class="n">of</span> <span class="n">virtualenv</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Install requirements:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt><strong>How to install</strong></dt><dd><p>A:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
+</pre></div>
+</div>
+<p>B:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">.</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</li>
+<li><p><strong>Fill the configuration file</strong></p></li>
+</ol>
+<p>Fill the config.yaml file with your configurations.</p>
+<ol class="arabic" start="4">
+<li><p><strong>How to run in command line</strong>
+- Run the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">aroundvision</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Unit Test and Code Coverage - Locally</strong></p></li>
+</ol>
+<p>In base folder you just run the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tox</span>
+</pre></div>
+</div>
+<p>This will perform some analysis and export a report.
+All the tests are executed against some py versions defined
+in tox.ini.</p>
+</div>
+</div>
+</div>
+<div class="section" id="code-documentation">
+<h1>Code Documentation<a class="headerlink" href="#code-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<div class="section" id="module-aroundvision.main">
+<span id="aroundvision-main"></span><h2>Aroundvision main<a class="headerlink" href="#module-aroundvision.main" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="aroundvision.main.input_arguments">
+<code class="sig-prename descclassname">aroundvision.main.</code><code class="sig-name descname">input_arguments</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/main.html#input_arguments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.main.input_arguments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Argparse input args</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="aroundvision.main.main">
+<code class="sig-prename descclassname">aroundvision.main.</code><code class="sig-name descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/main.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.main.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main Function</p>
+</dd></dl>
+
+</div>
+<div class="section" id="aroundvision-views">
+<h2>Aroundvision views<a class="headerlink" href="#aroundvision-views" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-aroundvision.views.mainwindow"></span><dl class="py class">
+<dt id="aroundvision.views.mainwindow.MainWindow">
+<em class="property">class </em><code class="sig-prename descclassname">aroundvision.views.mainwindow.</code><code class="sig-name descname">MainWindow</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">controller</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/mainwindow.html#MainWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.mainwindow.MainWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>AroundVision main window :: improve description</p>
+<dl class="py method">
+<dt id="aroundvision.views.mainwindow.MainWindow.change_cube_face">
+<code class="sig-name descname">change_cube_face</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cube_face</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/mainwindow.html#MainWindow.change_cube_face"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.mainwindow.MainWindow.change_cube_face" title="Permalink to this definition">¶</a></dt>
+<dd><p>slot: change cube face in model when user change cube face in combobox.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aroundvision.views.mainwindow.MainWindow.change_projection">
+<code class="sig-name descname">change_projection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">projection</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/mainwindow.html#MainWindow.change_projection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.mainwindow.MainWindow.change_projection" title="Permalink to this definition">¶</a></dt>
+<dd><p>slot: change projection in model when user change projection in combobox.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aroundvision.views.mainwindow.MainWindow.change_quality">
+<code class="sig-name descname">change_quality</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">quality</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/mainwindow.html#MainWindow.change_quality"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.mainwindow.MainWindow.change_quality" title="Permalink to this definition">¶</a></dt>
+<dd><p>slot: change quality in model when user change quality in combobox.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aroundvision.views.mainwindow.MainWindow.eventFilter">
+<code class="sig-name descname">eventFilter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/mainwindow.html#MainWindow.eventFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.mainwindow.MainWindow.eventFilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>evetFilter: used to resize image when window changes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aroundvision.views.mainwindow.MainWindow.face_cube">
+<code class="sig-name descname">face_cube</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">projection</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/mainwindow.html#MainWindow.face_cube"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.mainwindow.MainWindow.face_cube" title="Permalink to this definition">¶</a></dt>
+<dd><p>when projection is “Cube Map” we enable the combobox face_cube!</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aroundvision.views.mainwindow.MainWindow.fill_bottom_bar">
+<code class="sig-name descname">fill_bottom_bar</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/mainwindow.html#MainWindow.fill_bottom_bar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.mainwindow.MainWindow.fill_bottom_bar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fill bottom bar comboboxes with values defined in config file.
+Comboboxes: Projections, Quality, Faces Cube.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aroundvision.views.mainwindow.MainWindow.load_stylesheet">
+<code class="sig-name descname">load_stylesheet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/mainwindow.html#MainWindow.load_stylesheet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.mainwindow.MainWindow.load_stylesheet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load stylesheet and return a string</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aroundvision.views.mainwindow.MainWindow.open_about">
+<code class="sig-name descname">open_about</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/mainwindow.html#MainWindow.open_about"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.mainwindow.MainWindow.open_about" title="Permalink to this definition">¶</a></dt>
+<dd><p>Slot: display about window!</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aroundvision.views.mainwindow.MainWindow.open_help">
+<code class="sig-name descname">open_help</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/mainwindow.html#MainWindow.open_help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.mainwindow.MainWindow.open_help" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open aroundvision docs in browser.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aroundvision.views.mainwindow.MainWindow.open_load_source">
+<code class="sig-name descname">open_load_source</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/mainwindow.html#MainWindow.open_load_source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.mainwindow.MainWindow.open_load_source" title="Permalink to this definition">¶</a></dt>
+<dd><p>slot: display the load source window to set api endpoint..</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-aroundvision.views.load_source"></span><dl class="py class">
+<dt id="aroundvision.views.load_source.LoadSource">
+<em class="property">class </em><code class="sig-prename descclassname">aroundvision.views.load_source.</code><code class="sig-name descname">LoadSource</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">controller</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/load_source.html#LoadSource"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.load_source.LoadSource" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>LoadSource:</dt><dd><ul class="simple">
+<li><p>panel to set endpoint and stream index..</p></li>
+<li><p>connect with new endpoints</p></li>
+<li><p>display list of stream in server..</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="aroundvision.views.load_source.LoadSource.connect_slot">
+<code class="sig-name descname">connect_slot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/load_source.html#LoadSource.connect_slot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.load_source.LoadSource.connect_slot" title="Permalink to this definition">¶</a></dt>
+<dd><p>try connect and display the returned message (from connection)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aroundvision.views.load_source.LoadSource.create_stream_list">
+<code class="sig-name descname">create_stream_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/load_source.html#LoadSource.create_stream_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.load_source.LoadSource.create_stream_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create stream list, depends from get_stream_list GET values.</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-aroundvision.views.about"></span><dl class="py class">
+<dt id="aroundvision.views.about.About">
+<em class="property">class </em><code class="sig-prename descclassname">aroundvision.views.about.</code><code class="sig-name descname">About</code><a class="reference internal" href="_modules/aroundvision/views/about.html#About"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.about.About" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class used to build the About QDialog.</p>
+<p>This loads the ui file “about.ui” (this has a label with
+project description and a label to display the logo image).
+Then, we call set_link_to_label() to create a link to
+company website and, we call the set_logo() to display the logo image.</p>
+<dl class="py method">
+<dt id="aroundvision.views.about.About.set_link_to_label">
+<code class="sig-name descname">set_link_to_label</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/about.html#About.set_link_to_label"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.about.About.set_link_to_label" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setting link to Developed by ….</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aroundvision.views.about.About.set_logo">
+<code class="sig-name descname">set_logo</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/about.html#About.set_logo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.about.About.set_logo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setting logo from configuration</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id0">
+<code class="sig-name descname">set_link_to_label</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/about.html#About.set_link_to_label"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setting link to Developed by ….</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id1">
+<code class="sig-name descname">set_logo</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/about.html#About.set_logo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setting about logo!</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-aroundvision.views.video_player"></span><dl class="py class">
+<dt id="aroundvision.views.video_player.VideoPlayer">
+<em class="property">class </em><code class="sig-prename descclassname">aroundvision.views.video_player.</code><code class="sig-name descname">VideoPlayer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">model</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">controller</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/video_player.html#VideoPlayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.video_player.VideoPlayer" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>VideoPlayer:</dt><dd><ul class="simple">
+<li><p>initialize ImageWidget, TimeWorker and RegionOfInterest</p></li>
+<li><p>this control all video flow</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="aroundvision.views.video_player.VideoPlayer.display_frames">
+<code class="sig-name descname">display_frames</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/video_player.html#VideoPlayer.display_frames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.video_player.VideoPlayer.display_frames" title="Permalink to this definition">¶</a></dt>
+<dd><p>slot: when user press play, let’s display the frames.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aroundvision.views.video_player.VideoPlayer.display_roi">
+<code class="sig-name descname">display_roi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">roi_activated</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/video_player.html#VideoPlayer.display_roi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.video_player.VideoPlayer.display_roi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display Region of interest: create roi window and set image from saved in model..</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aroundvision.views.video_player.VideoPlayer.resize_image">
+<code class="sig-name descname">resize_image</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/video_player.html#VideoPlayer.resize_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.video_player.VideoPlayer.resize_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>resize image slot used to resize image when window changes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aroundvision.views.video_player.VideoPlayer.show_frame">
+<code class="sig-name descname">show_frame</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/video_player.html#VideoPlayer.show_frame"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.video_player.VideoPlayer.show_frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show frame: get image form queue -&gt; if exists, scale and set image in displayer!</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-aroundvision.views.displayer"></span><dl class="py class">
+<dt id="aroundvision.views.displayer.ImageWidget">
+<em class="property">class </em><code class="sig-prename descclassname">aroundvision.views.displayer.</code><code class="sig-name descname">ImageWidget</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">model</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">settings</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/displayer.html#ImageWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.displayer.ImageWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>ImageWidget: display images using setImage and paintEvent.
+The configure_tools is used to set play/pause buttons.
+The methods related with mouse are prepared to ROI task.</p>
+<dl class="py method">
+<dt id="aroundvision.views.displayer.ImageWidget.configure_tools">
+<code class="sig-name descname">configure_tools</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/displayer.html#ImageWidget.configure_tools"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.displayer.ImageWidget.configure_tools" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configure display tools: play and pause buttons.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aroundvision.views.displayer.ImageWidget.mouseMoveEvent">
+<code class="sig-name descname">mouseMoveEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">QMouseEvent</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/displayer.html#ImageWidget.mouseMoveEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.displayer.ImageWidget.mouseMoveEvent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="aroundvision.views.displayer.ImageWidget.mousePressEvent">
+<code class="sig-name descname">mousePressEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">QMouseEvent</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/displayer.html#ImageWidget.mousePressEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.displayer.ImageWidget.mousePressEvent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="aroundvision.views.displayer.ImageWidget.mouseReleaseEvent">
+<code class="sig-name descname">mouseReleaseEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">QMouseEvent</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/displayer.html#ImageWidget.mouseReleaseEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.displayer.ImageWidget.mouseReleaseEvent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="aroundvision.views.displayer.ImageWidget.paintEvent">
+<code class="sig-name descname">paintEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">QPaintEvent</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/displayer.html#ImageWidget.paintEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.displayer.ImageWidget.paintEvent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-aroundvision.views.qtimer_worker"></span><dl class="py class">
+<dt id="aroundvision.views.qtimer_worker.TimerWorker">
+<em class="property">class </em><code class="sig-prename descclassname">aroundvision.views.qtimer_worker.</code><code class="sig-name descname">TimerWorker</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frame_rate</span></em>, <em class="sig-param"><span class="n">show_frame</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/qtimer_worker.html#TimerWorker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.qtimer_worker.TimerWorker" title="Permalink to this definition">¶</a></dt>
+<dd><p>TimerWorker is just a simple timer with start and stop.
+- frame_rate: loop every x seconds
+- show_frame: method called when timeout..</p>
+</dd></dl>
+
+<span class="target" id="module-aroundvision.views.region_of_interest"></span><dl class="py class">
+<dt id="aroundvision.views.region_of_interest.RegionOfInterest">
+<em class="property">class </em><code class="sig-prename descclassname">aroundvision.views.region_of_interest.</code><code class="sig-name descname">RegionOfInterest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/region_of_interest.html#RegionOfInterest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.region_of_interest.RegionOfInterest" title="Permalink to this definition">¶</a></dt>
+<dd><p>RegionOfInterest:</p>
+<dl class="py method">
+<dt id="aroundvision.views.region_of_interest.RegionOfInterest.closeEvent">
+<code class="sig-name descname">closeEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">QCloseEvent</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/region_of_interest.html#RegionOfInterest.closeEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.region_of_interest.RegionOfInterest.closeEvent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="aroundvision.views.region_of_interest.RegionOfInterest.configure_tools">
+<code class="sig-name descname">configure_tools</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/region_of_interest.html#RegionOfInterest.configure_tools"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.region_of_interest.RegionOfInterest.configure_tools" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configure settings button.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aroundvision.views.region_of_interest.RegionOfInterest.eventFilter">
+<code class="sig-name descname">eventFilter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/region_of_interest.html#RegionOfInterest.eventFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.region_of_interest.RegionOfInterest.eventFilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>evetFilter: used to resize image when window changes.
+TODO: improve this behaviour in further devs</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aroundvision.views.region_of_interest.RegionOfInterest.open_roi_settings">
+<code class="sig-name descname">open_roi_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/region_of_interest.html#RegionOfInterest.open_roi_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.region_of_interest.RegionOfInterest.open_roi_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open roi settings panel..</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-aroundvision.views.roi_settings"></span><dl class="py class">
+<dt id="aroundvision.views.roi_settings.RoiSettings">
+<em class="property">class </em><code class="sig-prename descclassname">aroundvision.views.roi_settings.</code><code class="sig-name descname">RoiSettings</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/roi_settings.html#RoiSettings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.roi_settings.RoiSettings" title="Permalink to this definition">¶</a></dt>
+<dd><p>RoiSettings: settings panel with bitrate and quality.</p>
+<dl class="py method">
+<dt id="aroundvision.views.roi_settings.RoiSettings.change_roi_quality">
+<code class="sig-name descname">change_roi_quality</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">quality</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/roi_settings.html#RoiSettings.change_roi_quality"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.roi_settings.RoiSettings.change_roi_quality" title="Permalink to this definition">¶</a></dt>
+<dd><p>slot: change roi quality in model and in ui when user change roi quality in combobox.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aroundvision.views.roi_settings.RoiSettings.fill_ui">
+<code class="sig-name descname">fill_ui</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/roi_settings.html#RoiSettings.fill_ui"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.roi_settings.RoiSettings.fill_ui" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fill ui with model values.
+bitrate and quality.</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-aroundvision.views.popup"></span><dl class="py class">
+<dt id="aroundvision.views.popup.PopUp">
+<em class="property">class </em><code class="sig-prename descclassname">aroundvision.views.popup.</code><code class="sig-name descname">PopUp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text_message</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/views/popup.html#PopUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.views.popup.PopUp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-aroundvision.models.models">
+<span id="aroundvision-models"></span><h2>Aroundvision models<a class="headerlink" href="#module-aroundvision.models.models" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="aroundvision.models.models.FieldValue">
+<em class="property">class </em><code class="sig-prename descclassname">aroundvision.models.models.</code><code class="sig-name descname">FieldValue</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">initial_value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/models/models.html#FieldValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.models.models.FieldValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model variables must be FieldValue() because this object
+is already prepared to user register callbacks (observers)
+for this field.</p>
+<p>Example:
+:self.teste = field_value(“TESTE”) # initial value
+:self.teste.value # access variable and assign a new value
+:self.teste.register_callback( function ) :: function is
+:called when the variable (teste) is modified..</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="aroundvision.models.models.Model">
+<em class="property">class </em><code class="sig-prename descclassname">aroundvision.models.models.</code><code class="sig-name descname">Model</code><a class="reference internal" href="_modules/aroundvision/models/models.html#Model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.models.models.Model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model values saved</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-aroundvision.controllers.controller">
+<span id="aroundvision-controllers"></span><h2>Aroundvision controllers<a class="headerlink" href="#module-aroundvision.controllers.controller" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="aroundvision.controllers.controller.Controller">
+<em class="property">class </em><code class="sig-prename descclassname">aroundvision.controllers.controller.</code><code class="sig-name descname">Controller</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/controllers/controller.html#Controller"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.controllers.controller.Controller" title="Permalink to this definition">¶</a></dt>
+<dd><p>Application Controller:
+- our iteraction with api client..</p>
+<dl class="py method">
+<dt id="aroundvision.controllers.controller.Controller.get_frame_info">
+<code class="sig-name descname">get_frame_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/controllers/controller.html#Controller.get_frame_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.controllers.controller.Controller.get_frame_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get frame info from selected stream on API</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aroundvision.controllers.controller.Controller.get_stream_list">
+<code class="sig-name descname">get_stream_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/controllers/controller.html#Controller.get_stream_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.controllers.controller.Controller.get_stream_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get Stream List from API:
+- try to connect to API
+- return message: exception error or successfully status code</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="aroundvision.controllers.controller.Controller.select_stream">
+<code class="sig-name descname">select_stream</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/aroundvision/controllers/controller.html#Controller.select_stream"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#aroundvision.controllers.controller.Controller.select_stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select Stream index in API</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, csw
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

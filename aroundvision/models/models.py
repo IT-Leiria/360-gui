@@ -49,10 +49,10 @@ class FieldValue:
     for this field.
 
     Example:
-    - self.teste = field_value("TESTE") # initial value
-    - self.teste.value # access variable and assign a new value
-    - self.teste.register_callback( function ) :: function is
-      called when the variable (teste) is modified..
+    :self.teste = field_value("TESTE") # initial value
+    :self.teste.value # access variable and assign a new value
+    :self.teste.register_callback( function ) :: function is
+    :called when the variable (teste) is modified..
     """
     def __init__(self, initial_value):
         self._value = initial_value

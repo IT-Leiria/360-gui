@@ -1,0 +1,296 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>aroundvision.views.load_source &mdash; aroundvision 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> aroundvision
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">aroundvision</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>aroundvision.views.load_source</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for aroundvision.views.load_source</h1><div class="highlight"><pre>
+<span></span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">PyQt5</span> <span class="kn">import</span> <span class="n">uic</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="kn">import</span> <span class="n">pyqtSlot</span><span class="p">,</span> <span class="n">Qt</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="kn">import</span> <span class="n">QWidget</span><span class="p">,</span> <span class="n">QFormLayout</span><span class="p">,</span> <span class="n">QLabel</span>
+
+<span class="kn">from</span> <span class="nn">config.config_manager</span> <span class="kn">import</span> <span class="n">CONF</span>
+<span class="kn">from</span> <span class="nn">aroundvision.views.popup</span> <span class="kn">import</span> <span class="n">PopUp</span>
+
+
+<div class="viewcode-block" id="LoadSource"><a class="viewcode-back" href="../../../index.html#aroundvision.views.load_source.LoadSource">[docs]</a><span class="k">class</span> <span class="nc">LoadSource</span><span class="p">(</span><span class="n">QWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    LoadSource:</span>
+<span class="sd">        - panel to set endpoint and stream index..</span>
+<span class="sd">        - connect with new endpoints</span>
+<span class="sd">        - display list of stream in server..</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">controller</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span> <span class="o">=</span> <span class="n">controller</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loadsource_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_dir</span><span class="p">,</span> <span class="n">CONF</span><span class="o">.</span><span class="n">loadsource_filename</span><span class="p">)</span>
+
+        <span class="c1"># load ui</span>
+        <span class="n">uic</span><span class="o">.</span><span class="n">loadUi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loadsource_filename</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowFlags</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowCloseButtonHint</span> <span class="o">|</span> <span class="n">Qt</span><span class="o">.</span><span class="n">WindowMinimizeButtonHint</span><span class="p">)</span>
+
+        <span class="c1"># Assign model values to ui :: api endpoint and stream index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api_endpoint_lineEdit</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">api_endpoint</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stream_index_lineEdit</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">stream_index</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="c1"># Connects</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cancel_pushButton</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cancel_slot</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_pushButton</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_sources_slot</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect_pushButton</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connect_slot</span><span class="p">)</span>
+
+        <span class="c1"># Create stream list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_stream_list</span><span class="p">()</span>
+
+<div class="viewcode-block" id="LoadSource.create_stream_list"><a class="viewcode-back" href="../../../index.html#aroundvision.views.load_source.LoadSource.create_stream_list">[docs]</a>    <span class="k">def</span> <span class="nf">create_stream_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create stream list, depends from get_stream_list GET values.&quot;&quot;&quot;</span>
+        <span class="c1"># clear stream list layout in order to add or remove items (more easy)..</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_layout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stream_list_layout</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stream_list_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Stream List:&quot;</span><span class="p">))</span>
+
+        <span class="c1"># if we have stream list with values, add them to the layout..</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">stream_list</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
+            <span class="c1"># Create Widget and formLayout</span>
+            <span class="n">wid</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+            <span class="n">wid</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;background-color: #222222;&quot;</span><span class="p">)</span>
+            <span class="n">form</span> <span class="o">=</span> <span class="n">QFormLayout</span><span class="p">()</span>
+
+            <span class="c1"># add Row for values: index, name, size, bytes per pixel, number of layers</span>
+            <span class="n">stream</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">stream_list</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
+            <span class="n">form</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Stream Index: &quot;</span><span class="p">),</span> <span class="n">QLabel</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)))</span>
+            <span class="n">form</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Name: &quot;</span><span class="p">),</span> <span class="n">QLabel</span><span class="p">(</span><span class="n">stream</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]))</span>
+            <span class="n">form</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Size: &quot;</span><span class="p">),</span> <span class="n">QLabel</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">stream</span><span class="p">[</span><span class="s2">&quot;width&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot; x &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">stream</span><span class="p">[</span><span class="s2">&quot;height&quot;</span><span class="p">])))</span>
+            <span class="n">form</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Bytes per Pixel: &quot;</span><span class="p">),</span> <span class="n">QLabel</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">stream</span><span class="p">[</span><span class="s2">&quot;bytes_per_pixel&quot;</span><span class="p">])))</span>
+            <span class="n">form</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Number of layers: &quot;</span><span class="p">),</span> <span class="n">QLabel</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">stream</span><span class="p">[</span><span class="s2">&quot;number_of_layers&quot;</span><span class="p">])))</span>
+
+            <span class="c1"># add to layout</span>
+            <span class="n">wid</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stream_list_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">wid</span><span class="p">)</span></div>
+
+    <span class="nd">@pyqtSlot</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">open_load_source</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+
+<div class="viewcode-block" id="LoadSource.connect_slot"><a class="viewcode-back" href="../../../index.html#aroundvision.views.load_source.LoadSource.connect_slot">[docs]</a>    <span class="nd">@pyqtSlot</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">connect_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;try connect and display the returned message (from connection)&quot;&quot;&quot;</span>
+        <span class="c1"># get api endpoint from lineedit..</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">api_endpoint</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_endpoint_lineEdit</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+
+        <span class="c1"># let&#39;s connect and display popup with message</span>
+        <span class="n">connect_msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">get_stream_list</span><span class="p">()</span>
+        <span class="n">popup</span> <span class="o">=</span> <span class="n">PopUp</span><span class="p">(</span><span class="n">connect_msg</span><span class="p">)</span>
+        <span class="n">popup</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+
+        <span class="c1"># update our stream list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_stream_list</span><span class="p">()</span></div>
+
+    <span class="nd">@pyqtSlot</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">save_sources_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">end_point_current_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_endpoint_lineEdit</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">api_connected</span><span class="o">.</span><span class="n">value</span> <span class="ow">or</span> <span class="n">end_point_current_text</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">api_endpoint</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">popup</span> <span class="o">=</span> <span class="n">PopUp</span><span class="p">(</span><span class="s2">&quot;You are not connected with your endpoint: &quot;</span> <span class="o">+</span> <span class="n">end_point_current_text</span><span class="p">)</span>
+            <span class="n">popup</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">api_endpoint</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">end_point_current_text</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">select_stream</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="nd">@pyqtSlot</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">cancel_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">clear_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layout</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">layout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">while</span> <span class="n">layout</span><span class="o">.</span><span class="n">count</span><span class="p">():</span>
+                <span class="n">item</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">takeAt</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">widget</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">widget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">widget</span><span class="o">.</span><span class="n">deleteLater</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">clear_layout</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">layout</span><span class="p">())</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, csw
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

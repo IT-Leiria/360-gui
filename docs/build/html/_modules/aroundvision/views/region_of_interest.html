@@ -1,0 +1,266 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>aroundvision.views.region_of_interest &mdash; aroundvision 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> aroundvision
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">aroundvision</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>aroundvision.views.region_of_interest</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for aroundvision.views.region_of_interest</h1><div class="highlight"><pre>
+<span></span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">PyQt5</span> <span class="kn">import</span> <span class="n">uic</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="kn">import</span> <span class="n">pyqtSlot</span><span class="p">,</span> <span class="n">QEvent</span><span class="p">,</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">QSize</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtGui</span> <span class="kn">import</span> <span class="n">QIcon</span><span class="p">,</span> <span class="n">QPixmap</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="kn">import</span> <span class="n">QWidget</span><span class="p">,</span> <span class="n">QToolButton</span>
+
+<span class="kn">from</span> <span class="nn">config.config_manager</span> <span class="kn">import</span> <span class="n">CONF</span>
+<span class="kn">from</span> <span class="nn">aroundvision.views.displayer</span> <span class="kn">import</span> <span class="n">ImageWidget</span>
+<span class="kn">from</span> <span class="nn">aroundvision.views.roi_settings</span> <span class="kn">import</span> <span class="n">RoiSettings</span>
+
+
+<div class="viewcode-block" id="RegionOfInterest"><a class="viewcode-back" href="../../../index.html#aroundvision.views.region_of_interest.RegionOfInterest">[docs]</a><span class="k">class</span> <span class="nc">RegionOfInterest</span><span class="p">(</span><span class="n">QWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    RegionOfInterest:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">roi_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_dir</span><span class="p">,</span> <span class="n">CONF</span><span class="o">.</span><span class="n">roi_filename</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings_toolButton</span> <span class="o">=</span> <span class="n">QToolButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">configure_tools</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">roi_settings_window</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Create image widget to display roi images</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">roi_displayer</span> <span class="o">=</span> <span class="n">ImageWidget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings_toolButton</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">installEventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">uic</span><span class="o">.</span><span class="n">loadUi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_filename</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># Connects</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings_toolButton</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">open_roi_settings</span><span class="p">)</span>
+
+        <span class="c1"># Add displayer to layout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">roi_verticalLayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_displayer</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RegionOfInterest.configure_tools"><a class="viewcode-back" href="../../../index.html#aroundvision.views.region_of_interest.RegionOfInterest.configure_tools">[docs]</a>    <span class="k">def</span> <span class="nf">configure_tools</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Configure settings button.&quot;&quot;&quot;</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">QIcon</span><span class="p">()</span>
+        <span class="n">icon</span><span class="o">.</span><span class="n">addPixmap</span><span class="p">(</span><span class="n">QPixmap</span><span class="p">(</span><span class="n">CONF</span><span class="o">.</span><span class="n">settings_icon</span><span class="p">),</span> <span class="n">QIcon</span><span class="o">.</span><span class="n">Normal</span><span class="p">,</span> <span class="n">QIcon</span><span class="o">.</span><span class="n">Off</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings_toolButton</span><span class="o">.</span><span class="n">setIcon</span><span class="p">(</span><span class="n">icon</span><span class="p">)</span>
+
+        <span class="n">p_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings_toolButton</span><span class="o">.</span><span class="n">font</span><span class="p">()</span><span class="o">.</span><span class="n">pointSize</span><span class="p">()</span> <span class="o">*</span> <span class="mi">3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings_toolButton</span><span class="o">.</span><span class="n">setIconSize</span><span class="p">(</span><span class="n">QSize</span><span class="p">(</span><span class="n">p_size</span><span class="p">,</span> <span class="n">p_size</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings_toolButton</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;background-color: rgba(122, 122, 122, 0);&quot;</span>
+                                               <span class="s2">&quot;border: 0px;&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RegionOfInterest.eventFilter"><a class="viewcode-back" href="../../../index.html#aroundvision.views.region_of_interest.RegionOfInterest.eventFilter">[docs]</a>    <span class="k">def</span> <span class="nf">eventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;evetFilter: used to resize image when window changes.</span>
+<span class="sd">        TODO: improve this behaviour in further devs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># resize event?</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">QEvent</span><span class="o">.</span><span class="n">Resize</span><span class="p">:</span>
+            <span class="c1"># yes, is the image is ok?</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">roi_image</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># yes, let&#39;s resize</span>
+                <span class="c1"># TODO: check -at the moment we resize without &quot;KeepAspectRatio&quot;, if we want it please use</span>
+                <span class="c1">#  self.image.scaled(self.main_displayer.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">roi_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">roi_image</span><span class="o">.</span><span class="n">scaled</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_displayer</span><span class="o">.</span><span class="n">size</span><span class="p">(),</span>
+                                                                   <span class="n">Qt</span><span class="o">.</span><span class="n">IgnoreAspectRatio</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">SmoothTransformation</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">roi_displayer</span><span class="o">.</span><span class="n">setImage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">roi_image</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">eventFilter</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RegionOfInterest.closeEvent"><a class="viewcode-back" href="../../../index.html#aroundvision.views.region_of_interest.RegionOfInterest.closeEvent">[docs]</a>    <span class="k">def</span> <span class="nf">closeEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">clean_roi_model</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RegionOfInterest</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">closeEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
+
+    <span class="nd">@pyqtSlot</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">open_roi_window</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+
+<div class="viewcode-block" id="RegionOfInterest.open_roi_settings"><a class="viewcode-back" href="../../../index.html#aroundvision.views.region_of_interest.RegionOfInterest.open_roi_settings">[docs]</a>    <span class="nd">@pyqtSlot</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">open_roi_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Open roi settings panel..&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">roi_settings_window</span> <span class="o">=</span> <span class="n">RoiSettings</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">roi_settings_window</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, csw
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

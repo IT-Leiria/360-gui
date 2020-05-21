@@ -10,6 +10,7 @@ detail.
 """
 
 import io
+import pathlib
 import sys
 
 from setuptools import find_packages
@@ -32,6 +33,31 @@ with io.open('README.md', encoding='utf-8') as f:
     LONG_DESCRIPTION = f.read()
 
 
+def find_files_in_folder(folder_name: str) -> []:
+    return [
+        'aroundvision/{}'.format(p).replace('/', '.')
+        for p
+        in pathlib.Path(folder_name).glob('**')
+    ]
+
+
+def get_additional_packages() -> []:
+    packages= find_files_in_folder("docs") + find_files_in_folder("config")
+    print(packages)
+    return packages
+
+
+def get_packages():
+    packages = find_packages(exclude=["*.tests", '*.tests.*', 'config'])
+    return packages
+
+
+package_dir = {
+    'aroundvision': 'aroundvision',
+    'aroundvision.docs': 'docs',
+    'aroundvision.config': 'config'
+}
+
 # Setup args
 setup(
     name="aroundvision",
@@ -43,7 +69,8 @@ setup(
     author_email='check email to set..',
     keywords='360 images PyQt5 video',
     platforms=["Windows", "Linux"],
-    packages=find_packages(exclude=["*.tests", '*.tests.*']),
+    packages=get_packages() + get_additional_packages(),
+    package_dir=package_dir,
     include_package_data=True,
     classifiers=['Operating System :: POSIX :: Linux',
                  'Programming Language :: Python :: 3',

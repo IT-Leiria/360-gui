@@ -1,6 +1,6 @@
 include README.md
 include MANIFEST.in
-include docs/*
+recursive-include docs *
 include requirements.txt
 
 include aroundvision/views/mainwindow.ui
@@ -8,10 +8,12 @@ include aroundvision/views/load_source.ui
 include aroundvision/views/popup.ui
 include aroundvision/views/region_of_interest.ui
 include aroundvision/views/roi_settings.ui
+include aroundvision/views/about.ui
 include aroundvision/views/aroundvision.css
 include aroundvision/images/pause-circle-solid_ok.png
 include aroundvision/images/play-circle-solid_ok.png
 include aroundvision/images/settings-solid_ok.png
+include aroundvision/images/csw_logo.png
 include config/config.yaml
 
 include tox.ini
