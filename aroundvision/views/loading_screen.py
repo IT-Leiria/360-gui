@@ -9,36 +9,18 @@ class LoadingScreen(QDialog):
     Loading Screen: create a qmovie with the animation gif received
     during the display time in seconds.
 
-    Methods
-    -------
-    create_qmovie()
-        Create a QMovie with the loading_gif_filename.
-    adjust_loading_position(parent_geometry: QRect)
-        Adjust loading position with parent geometry.
-    start_animation()
-        Start the animation.
-    stop_animation()
-        Stop the animation.
-    get_x_position(parent_width: int)
-        Get x position to move the animation gif.
-    get_y_position(parent_height: int)
-        Get y position to move the animation gif.
+    :param parent: Parent who call LoadingScreen
+    :type parent: QWidget
+    :param loading_gif_filename: Filename with animation gif
+    :type loading_gif_filename: str
+    :param display_time: Animation display time in milliseconds
+    :type display_time: int
     """
 
     # Signals
     close_signal = pyqtSignal()
 
     def __init__(self, parent=None, loading_gif_filename=None, display_time=None):
-        """
-        Parameters
-        ----------
-        parent : QWidget
-            Parent who call LoadingScreen
-        loading_gif_filename : str
-            Filename with animation gif
-        display_time : int
-            Animation display time in milliseconds
-        """
         super(LoadingScreen, self).__init__(parent)
         # Variables
         self.parent = parent
@@ -93,17 +75,15 @@ class LoadingScreen(QDialog):
     def get_x_position(self, parent_width: int) -> int:
         """Get x position to move the animation gif.
 
-        parent_width : int
-            parent width used to compute x center position ..
+        :param parent_width: parent width used to compute x center position ..
+        :type parent_width: int
         """
         return int(((parent_width - self.width()) / 2) + 17)  # 17 -> just to stay on the center
 
     def get_y_position(self, parent_height: int) -> int:
         """Get y position to move the animation gif.
 
-        Parameters
-        ----------
-        parent_height : int
-            parent height used to compute y center position ..
+        :param parent_height: parent height used to compute y center position ..
+        :type parent_height: int
         """
         return int((parent_height - self.height()) / 2)
