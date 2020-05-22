@@ -40,6 +40,7 @@ class MainWindow(QMainWindow):
         # load ui's
         uic.loadUi(self.mainwindow_filename, self)
         self.setStyleSheet(self.load_stylesheet())
+        self.showMaximized()
 
         # Register callback for projections because we just enable
         # face_cube combobox when the projection is "Cube Map"
