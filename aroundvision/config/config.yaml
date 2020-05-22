@@ -62,5 +62,7 @@ icons:
   pause_icon: "pause-circle-solid_ok.png"
   settings_icon: "settings-solid_ok.png"
   about_logo: "csw_logo.png"
+  loading_gif: "loading.gif"
 doc_url: "docs/build/html/index.html"
+loading_time_seconds: 3000
 ...

@@ -6,11 +6,12 @@
 import cv2
 import numpy as np
 
-from PyQt5.QtGui import QPainter, QIcon, QPixmap, QImage
+from PyQt5.QtGui import QPainter, QIcon, QPixmap, QImage, QResizeEvent
 from PyQt5.QtWidgets import QWidget, QApplication, QRubberBand, QToolButton, QVBoxLayout
-from PyQt5.QtCore import QPoint, QRect, QSize, Qt
+from PyQt5.QtCore import QPoint, QRect, QSize, Qt, pyqtSlot
 
 from aroundvision.config.config_manager import CONF
+from aroundvision.views.loading_screen import LoadingScreen
 
 
 class ImageWidget(QWidget):
@@ -21,9 +22,11 @@ class ImageWidget(QWidget):
     """
     def __init__(self, parent=None, model=None, settings=None):
         super(ImageWidget, self).__init__(parent)
+        self.parent = parent
         self.image = None
         self.model = model
         self.settings = settings
+        self.loading = None
         # select area
         self.rubber_band = QRubberBand(QRubberBand.Rectangle, self)
         self.origin = QPoint()
@@ -88,6 +91,30 @@ class ImageWidget(QWidget):
                 # cv2.imshow("ROI", self.convert_qimage_to_mat(img_crop))
 
         return super(ImageWidget, self).mouseReleaseEvent(event)
+
+    def resizeEvent(self, event: QResizeEvent) -> None:
+        """If we have the loading screen activated and if we resize the main window
+        we have to adjust the loading position."""
+        if self.loading:
+            self.loading.adjust_loading_position(self.geometry())
+
+    def set_loading_screen(self) -> None:
+        """Setting the loading screen showing an animation gif."""
+        self.loading = LoadingScreen(self, CONF.loading_gif, CONF.loading_gif_time)
+        self.loading.close_signal.connect(self.start_displaying)
+        self.loading.show()
+        # disable play button, the user cannot pause when we are loading..
+        self.play_toolButton.setEnabled(False)
+
+    @pyqtSlot()
+    def start_displaying(self) -> None:
+        """This slot will start timer in parent."""
+        # play?
+        if self.play_toolButton.isChecked():
+            # yes, let's start timer worker..
+            self.parent.start_timer.emit()
+            # enable again the play button..
+            self.play_toolButton.setEnabled(True)
 
     # this was used in imshow with opencv example ..
     #@staticmethod

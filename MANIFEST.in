@@ -14,6 +14,7 @@ include aroundvision/images/pause-circle-solid_ok.png
 include aroundvision/images/play-circle-solid_ok.png
 include aroundvision/images/settings-solid_ok.png
 include aroundvision/images/csw_logo.png
+include aroundvision/images/loading.gif
 include aroundvision/config/config.yaml
 
 include tox.ini

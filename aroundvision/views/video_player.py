@@ -82,8 +82,15 @@ class VideoPlayer(QWidget):
             self.capture_thread = threading.Thread(name="capturing", target=self.controller.get_frame_from_api)
             self.capture_thread.start()
 
-            # Start timer to show image from queue every x seconds
-            self.start_timer.emit()
+            # Do we already have images in the queue?
+            if self.model.image_queue.empty():
+                # No, let's Loading frames ... when timeout is reached, the main displayer
+                # will emit the signal (start_timer), then the Start timer will start showing
+                # a image from queue every x seconds
+                self.main_displayer.set_loading_screen()
+            else:
+                # yes, we just pause the video let's start again..
+                self.start_timer.emit()
         else:
             # no, pause the display..
             logger.info("Pause display 360.")

@@ -96,16 +96,22 @@ class Controller(object):
             # get stream list from API
             r = self.session.get(self.model.api_endpoint.value + CONF.api_get_stream_list_path, stream=True)
 
-            # update our model with values
-            for i, s in enumerate(literal_eval(r.content.decode())):
-                self.model.stream_list.value["stream" + str(i)] = {"name": s[0], "width": s[1], "height": s[2],
-                                                                   "bytes_per_pixel": s[3], "number_of_layers": s[4]}
+            # Success request?
+            if r.status_code == 200:
+                # yes, let's update our model with values
+                for i, s in enumerate(literal_eval(r.content.decode())):
+                    self.model.stream_list.value["stream" + str(i)] = \
+                        {"name": s[0], "width": s[1], "height": s[2],
+                         "bytes_per_pixel": s[3], "number_of_layers": s[4]}
 
-            self.model.api_connected.value = True
-            logger.info("Connection Status {0} and our stream list {1}!".format(
-                r.status_code, self.model.stream_list.value))
+                self.model.api_connected.value = True
+                logger.info("Connection Status {0} and our stream list {1}!".format(
+                    r.status_code, self.model.stream_list.value))
 
-            return "Connection Status {0}!".format(str(r.status_code))
+                return "Connection Status {0}!".format(str(r.status_code))
+            else:
+                # no, let's return warning message
+                return r.content.decode()
 
         except requests.exceptions.RequestException as err:
             logger.warning("Connection error: {0}".format(str(err)))

@@ -14,13 +14,19 @@ class TimerWorker(QObject):
         super().__init__()
         self.frame_rate = frame_rate
         self.show_frame = show_frame
+        self._timer = None
 
     @pyqtSlot()
     def start(self):
+        """Start time and connect with slot received!"""
+        print("START worker")
         self._timer = QTimer(self)
         self._timer.timeout.connect(self.show_frame)
         self._timer.start(self.frame_rate)
 
     @pyqtSlot()
     def stop(self):
-        self._timer.stop()
+        """If we have timer stop it!"""
+        if self._timer:
+            self._timer.stop()
+
