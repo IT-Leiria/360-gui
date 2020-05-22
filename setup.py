@@ -42,20 +42,16 @@ def find_files_in_folder(folder_name: str) -> []:
 
 
 def get_additional_packages() -> []:
-    packages= find_files_in_folder("docs") + find_files_in_folder("config")
-    print(packages)
-    return packages
+    return find_files_in_folder("docs")
 
 
 def get_packages():
-    packages = find_packages(exclude=["*.tests", '*.tests.*', 'config'])
-    return packages
+    return find_packages(exclude=["*.tests", '*.tests.*'])
 
 
 package_dir = {
     'aroundvision': 'aroundvision',
-    'aroundvision.docs': 'docs',
-    'aroundvision.config': 'config'
+    'aroundvision.docs': 'docs'
 }
 
 # Setup args

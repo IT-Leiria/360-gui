@@ -6,7 +6,7 @@ from PyQt5.QtCore import pyqtSlot, QEvent, Qt, QSize
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QWidget, QToolButton
 
-from config.config_manager import CONF
+from aroundvision.config.config_manager import CONF
 from aroundvision.views.displayer import ImageWidget
 from aroundvision.views.roi_settings import RoiSettings
 

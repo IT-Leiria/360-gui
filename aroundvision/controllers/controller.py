@@ -7,7 +7,7 @@ import logging
 from ast import literal_eval
 import urllib
 
-from config.config_manager import CONF
+from aroundvision.config.config_manager import CONF
 
 import requests
 import numpy as np

@@ -11,7 +11,7 @@ from aroundvision.utils.app_utils import setup_logging
 from aroundvision.views.mainwindow import MainWindow
 from aroundvision.models.models import Model
 from aroundvision.controllers.controller import Controller
-from config.config_manager import CONF
+from aroundvision.config.config_manager import CONF
 
 from PyQt5.QtWidgets import QApplication
 

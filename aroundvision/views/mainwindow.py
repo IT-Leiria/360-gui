@@ -14,7 +14,7 @@ from PyQt5 import uic
 from aroundvision.views.load_source import LoadSource
 from aroundvision.views.about import About
 from aroundvision.views.video_player import VideoPlayer
-from config.config_manager import CONF
+from aroundvision.config.config_manager import CONF
 
 logger = logging.getLogger(__name__)
 

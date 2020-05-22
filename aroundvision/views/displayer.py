@@ -10,7 +10,7 @@ from PyQt5.QtGui import QPainter, QIcon, QPixmap, QImage
 from PyQt5.QtWidgets import QWidget, QApplication, QRubberBand, QToolButton, QVBoxLayout
 from PyQt5.QtCore import QPoint, QRect, QSize, Qt
 
-from config.config_manager import CONF
+from aroundvision.config.config_manager import CONF
 
 
 class ImageWidget(QWidget):

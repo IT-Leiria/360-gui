@@ -5,7 +5,7 @@ from PyQt5 import uic
 from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtWidgets import QWidget
 
-from config.config_manager import CONF
+from aroundvision.config.config_manager import CONF
 from aroundvision.views.popup import PopUp
 
 
