@@ -1,5 +1,5 @@
 
-import os
+import logging
 
 from PyQt5 import uic
 from PyQt5.QtCore import pyqtSlot, Qt
@@ -8,25 +8,37 @@ from PyQt5.QtWidgets import QWidget, QFormLayout, QLabel
 from aroundvision.config.config_manager import CONF
 from aroundvision.views.popup import PopUp
 
+logger = logging.getLogger(__name__)
+
 
 class LoadSource(QWidget):
-    """
-    LoadSource:
-        - panel to set endpoint and stream index..
-        - connect with new endpoints
-        - display list of stream in server..
+    """LoadSource: it's like the main settings, the user has:
+        - a panel to insert the endpoint and the stream index..
+        - button to connect to the API with the inserted values
+        - a layout to display a list of streams as the response from connect..
+    Than, this module needs the model to get and save the endpoints and selected streams
+    and, the controller to interact with the API.
+
+    Example:
+        - API Endpoint: http://0.0.0.0:5000/
+        - Stream Index: 0
+        - Stream List (accordingly with API response):
+            - Stream Index: 0
+            - Name: /datasets/Video.yuv
+            - Size: 3840 x 1920
+            - Bytes per pixel: 1
+            - Number of layers: 1
     """
     def __init__(self, model, controller):
+        """Constructor for load source window!"""
         super().__init__()
-
+        logger.info("Creating load source window!")
         # variables
         self.model = model
         self.controller = controller
-        self.current_dir = os.path.dirname(__file__)
-        self.loadsource_filename = os.path.join(self.current_dir, CONF.loadsource_filename)
 
         # load ui
-        uic.loadUi(self.loadsource_filename, self)
+        uic.loadUi(CONF.loadsource_filename, self)
         self.setWindowFlags(Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
 
         # Assign model values to ui :: api endpoint and stream index
@@ -41,8 +53,8 @@ class LoadSource(QWidget):
         # Create stream list
         self.create_stream_list()
 
-    def create_stream_list(self):
-        """Create stream list, depends from get_stream_list GET values."""
+    def create_stream_list(self) -> None:
+        """Create the stream list, depends from get_stream_list GET values."""
         # clear stream list layout in order to add or remove items (more easy)..
         self.clear_layout(self.stream_list_layout)
 
@@ -67,13 +79,11 @@ class LoadSource(QWidget):
             wid.setLayout(form)
             self.stream_list_layout.addWidget(wid)
 
-    @pyqtSlot()
-    def open_load_source(self):
-        self.exec_()
+            logger.info("Adding the following stream {0}".format(stream))
 
     @pyqtSlot()
     def connect_slot(self):
-        """try connect and display the returned message (from connection)"""
+        """Slot: try to connect and display the returned message (from connection)"""
         # get api endpoint from lineedit..
         self.model.api_endpoint.value = self.api_endpoint_lineEdit.text()
 
@@ -87,6 +97,7 @@ class LoadSource(QWidget):
 
     @pyqtSlot()
     def save_sources_slot(self):
+        """Slot for save button. Save inserted data in model and select_stream in API!"""
         end_point_current_text = self.api_endpoint_lineEdit.text()
         if not self.model.api_connected.value or end_point_current_text != self.model.api_endpoint.value:
             popup = PopUp("You are not connected with your endpoint: " + end_point_current_text)
@@ -98,9 +109,11 @@ class LoadSource(QWidget):
 
     @pyqtSlot()
     def cancel_slot(self):
+        """Slot to close open source window!"""
         self.close()
 
-    def clear_layout(self, layout):
+    def clear_layout(self, layout) -> None:
+        """Remove all content from the received layout."""
         if layout is not None:
             while layout.count():
                 item = layout.takeAt(0)

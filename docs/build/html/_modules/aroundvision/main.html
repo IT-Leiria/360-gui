@@ -154,13 +154,13 @@
 <span class="kn">from</span> <span class="nn">aroundvision.views.mainwindow</span> <span class="kn">import</span> <span class="n">MainWindow</span>
 <span class="kn">from</span> <span class="nn">aroundvision.models.models</span> <span class="kn">import</span> <span class="n">Model</span>
 <span class="kn">from</span> <span class="nn">aroundvision.controllers.controller</span> <span class="kn">import</span> <span class="n">Controller</span>
-<span class="kn">from</span> <span class="nn">config.config_manager</span> <span class="kn">import</span> <span class="n">CONF</span>
+<span class="kn">from</span> <span class="nn">aroundvision.config.config_manager</span> <span class="kn">import</span> <span class="n">CONF</span>
 
 <span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="kn">import</span> <span class="n">QApplication</span>
 
 
 <div class="viewcode-block" id="input_arguments"><a class="viewcode-back" href="../../index.html#aroundvision.main.input_arguments">[docs]</a><span class="k">def</span> <span class="nf">input_arguments</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Argparse input args&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Argparse with help description and input args!&quot;&quot;&quot;</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The AROUNDVISION is a tool to visualize 360 images from an API &quot;</span>
                     <span class="s2">&quot;in different projections. Additionally, it allows the user to &quot;</span>
@@ -181,7 +181,7 @@
 
 
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../index.html#aroundvision.main.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Main Function&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Main Function: setup logging and run_app!&quot;&quot;&quot;</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">input_arguments</span><span class="p">()</span>
     <span class="n">setup_logging</span><span class="p">(</span><span class="n">CONF</span><span class="o">.</span><span class="n">log_filename</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">logging</span><span class="p">,</span> <span class="n">CONF</span><span class="o">.</span><span class="n">log_level</span><span class="p">),</span> <span class="n">CONF</span><span class="o">.</span><span class="n">log_format</span><span class="p">)</span>
     <span class="n">run_app</span><span class="p">()</span></div>

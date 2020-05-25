@@ -1,24 +1,25 @@
 
-"""
-
-"""
-
 import queue
+
+from aroundvision.config.config_manager import CONF
 
 
 class Model(object):
-    """Model values saved"""
+    """Model: this class defines all values shared in all application (like a database)!"""
     def __init__(self):
+        # from config values
         self.selected_projection = FieldValue("")
         self.selected_projection_api = FieldValue("")
         self.selected_quality = FieldValue("")
         self.selected_cube_face = FieldValue("")
-        self.api_endpoint = FieldValue("")
-        self.frame_rate = FieldValue(1000)
+        self.api_endpoint = FieldValue(CONF.api_endpoint)
+        self.frame_rate = FieldValue(CONF.frame_rate)
         # region of interest vars
         self.roi_activated = FieldValue(False)
         self.roi_image = None
         self.roi_geometry = None
+        self.selected_roi_bitrate = FieldValue(CONF.roi_bitrate)
+        self.selected_roi_quality = FieldValue(CONF.roi_quality)
 
         # main display: queue and capturing..
         self.image_queue = queue.Queue()
@@ -27,7 +28,7 @@ class Model(object):
         # Streams
         self.api_connected = FieldValue(True)
         self.stream_list = FieldValue({})
-        self.stream_index = FieldValue("0")
+        self.stream_index = FieldValue(CONF.api_selected_stream_idx)
 
         # Frame variables
         self.width = FieldValue(None)
@@ -49,10 +50,11 @@ class FieldValue:
     for this field.
 
     Example:
-    :self.teste = field_value("TESTE") # initial value
-    :self.teste.value # access variable and assign a new value
-    :self.teste.register_callback( function ) :: function is
-    :called when the variable (teste) is modified..
+
+        - self.teste = field_value("TESTE") # initial value
+        - self.teste.value # access variable and assign a new value
+        - self.teste.register_callback( function ) :: function is\
+        called when the variable (teste) is modified..
     """
     def __init__(self, initial_value):
         self._value = initial_value

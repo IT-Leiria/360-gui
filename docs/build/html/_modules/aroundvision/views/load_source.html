@@ -142,34 +142,46 @@
             
   <h1>Source code for aroundvision.views.load_source</h1><div class="highlight"><pre>
 <span></span>
-<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="kn">from</span> <span class="nn">PyQt5</span> <span class="kn">import</span> <span class="n">uic</span>
 <span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="kn">import</span> <span class="n">pyqtSlot</span><span class="p">,</span> <span class="n">Qt</span>
 <span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="kn">import</span> <span class="n">QWidget</span><span class="p">,</span> <span class="n">QFormLayout</span><span class="p">,</span> <span class="n">QLabel</span>
 
-<span class="kn">from</span> <span class="nn">config.config_manager</span> <span class="kn">import</span> <span class="n">CONF</span>
+<span class="kn">from</span> <span class="nn">aroundvision.config.config_manager</span> <span class="kn">import</span> <span class="n">CONF</span>
 <span class="kn">from</span> <span class="nn">aroundvision.views.popup</span> <span class="kn">import</span> <span class="n">PopUp</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="LoadSource"><a class="viewcode-back" href="../../../index.html#aroundvision.views.load_source.LoadSource">[docs]</a><span class="k">class</span> <span class="nc">LoadSource</span><span class="p">(</span><span class="n">QWidget</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    LoadSource:</span>
-<span class="sd">        - panel to set endpoint and stream index..</span>
-<span class="sd">        - connect with new endpoints</span>
-<span class="sd">        - display list of stream in server..</span>
+    <span class="sd">&quot;&quot;&quot;LoadSource: it&#39;s like the main settings, the user has:</span>
+<span class="sd">        - a panel to insert the endpoint and the stream index..</span>
+<span class="sd">        - button to connect to the API with the inserted values</span>
+<span class="sd">        - a layout to display a list of streams as the response from connect..</span>
+<span class="sd">    Than, this module needs the model to get and save the endpoints and selected streams</span>
+<span class="sd">    and, the controller to interact with the API.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        - API Endpoint: http://0.0.0.0:5000/</span>
+<span class="sd">        - Stream Index: 0</span>
+<span class="sd">        - Stream List (accordingly with API response):</span>
+<span class="sd">            - Stream Index: 0</span>
+<span class="sd">            - Name: /datasets/Video.yuv</span>
+<span class="sd">            - Size: 3840 x 1920</span>
+<span class="sd">            - Bytes per pixel: 1</span>
+<span class="sd">            - Number of layers: 1</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">controller</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor for load source window!&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creating load source window!&quot;</span><span class="p">)</span>
         <span class="c1"># variables</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">controller</span> <span class="o">=</span> <span class="n">controller</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">current_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">loadsource_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_dir</span><span class="p">,</span> <span class="n">CONF</span><span class="o">.</span><span class="n">loadsource_filename</span><span class="p">)</span>
 
         <span class="c1"># load ui</span>
-        <span class="n">uic</span><span class="o">.</span><span class="n">loadUi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loadsource_filename</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">uic</span><span class="o">.</span><span class="n">loadUi</span><span class="p">(</span><span class="n">CONF</span><span class="o">.</span><span class="n">loadsource_filename</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setWindowFlags</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">WindowCloseButtonHint</span> <span class="o">|</span> <span class="n">Qt</span><span class="o">.</span><span class="n">WindowMinimizeButtonHint</span><span class="p">)</span>
 
         <span class="c1"># Assign model values to ui :: api endpoint and stream index</span>
@@ -184,8 +196,8 @@
         <span class="c1"># Create stream list</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">create_stream_list</span><span class="p">()</span>
 
-<div class="viewcode-block" id="LoadSource.create_stream_list"><a class="viewcode-back" href="../../../index.html#aroundvision.views.load_source.LoadSource.create_stream_list">[docs]</a>    <span class="k">def</span> <span class="nf">create_stream_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Create stream list, depends from get_stream_list GET values.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="LoadSource.create_stream_list"><a class="viewcode-back" href="../../../index.html#aroundvision.views.load_source.LoadSource.create_stream_list">[docs]</a>    <span class="k">def</span> <span class="nf">create_stream_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create the stream list, depends from get_stream_list GET values.&quot;&quot;&quot;</span>
         <span class="c1"># clear stream list layout in order to add or remove items (more easy)..</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clear_layout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stream_list_layout</span><span class="p">)</span>
 
@@ -208,15 +220,13 @@
 
             <span class="c1"># add to layout</span>
             <span class="n">wid</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stream_list_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">wid</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stream_list_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">wid</span><span class="p">)</span>
 
-    <span class="nd">@pyqtSlot</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">open_load_source</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Adding the following stream </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stream</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="LoadSource.connect_slot"><a class="viewcode-back" href="../../../index.html#aroundvision.views.load_source.LoadSource.connect_slot">[docs]</a>    <span class="nd">@pyqtSlot</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">connect_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;try connect and display the returned message (from connection)&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Slot: try to connect and display the returned message (from connection)&quot;&quot;&quot;</span>
         <span class="c1"># get api endpoint from lineedit..</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">api_endpoint</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_endpoint_lineEdit</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
 
@@ -228,8 +238,9 @@
         <span class="c1"># update our stream list</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">create_stream_list</span><span class="p">()</span></div>
 
-    <span class="nd">@pyqtSlot</span><span class="p">()</span>
+<div class="viewcode-block" id="LoadSource.save_sources_slot"><a class="viewcode-back" href="../../../index.html#aroundvision.views.load_source.LoadSource.save_sources_slot">[docs]</a>    <span class="nd">@pyqtSlot</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">save_sources_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Slot for save button. Save inserted data in model and select_stream in API!&quot;&quot;&quot;</span>
         <span class="n">end_point_current_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_endpoint_lineEdit</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">api_connected</span><span class="o">.</span><span class="n">value</span> <span class="ow">or</span> <span class="n">end_point_current_text</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">api_endpoint</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
             <span class="n">popup</span> <span class="o">=</span> <span class="n">PopUp</span><span class="p">(</span><span class="s2">&quot;You are not connected with your endpoint: &quot;</span> <span class="o">+</span> <span class="n">end_point_current_text</span><span class="p">)</span>
@@ -237,13 +248,15 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">api_endpoint</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">end_point_current_text</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">select_stream</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
-    <span class="nd">@pyqtSlot</span><span class="p">()</span>
+<div class="viewcode-block" id="LoadSource.cancel_slot"><a class="viewcode-back" href="../../../index.html#aroundvision.views.load_source.LoadSource.cancel_slot">[docs]</a>    <span class="nd">@pyqtSlot</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">cancel_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="sd">&quot;&quot;&quot;Slot to close open source window!&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
-    <span class="k">def</span> <span class="nf">clear_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layout</span><span class="p">):</span>
+<div class="viewcode-block" id="LoadSource.clear_layout"><a class="viewcode-back" href="../../../index.html#aroundvision.views.load_source.LoadSource.clear_layout">[docs]</a>    <span class="k">def</span> <span class="nf">clear_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layout</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Remove all content from the received layout.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">layout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">while</span> <span class="n">layout</span><span class="o">.</span><span class="n">count</span><span class="p">():</span>
                 <span class="n">item</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">takeAt</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
@@ -251,7 +264,7 @@
                 <span class="k">if</span> <span class="n">widget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">widget</span><span class="o">.</span><span class="n">deleteLater</span><span class="p">()</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">clear_layout</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">layout</span><span class="p">())</span></div>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">clear_layout</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">layout</span><span class="p">())</span></div></div>
 </pre></div>
 
            </div>

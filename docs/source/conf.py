@@ -35,7 +35,7 @@ extensions = [
     'sphinx.ext.autodoc',  # Pull in documentation from docstrings
     'sphinx.ext.napoleon',  # Support for NumPy and Google style docstrings
     'sphinx.ext.viewcode',  # Generate HTML highlighted source code
-    'rinoh.frontend.sphinx',
+    # 'rinoh.frontend.sphinx',
     'sphinx_rtd_theme'
 ]
 

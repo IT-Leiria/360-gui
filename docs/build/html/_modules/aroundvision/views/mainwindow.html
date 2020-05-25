@@ -142,71 +142,77 @@
             
   <h1>Source code for aroundvision.views.mainwindow</h1><div class="highlight"><pre>
 <span></span>
-<span class="sd">&quot;&quot;&quot;</span>
-
-<span class="sd">&quot;&quot;&quot;</span>
-
-<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
-<span class="kn">from</span> <span class="nn">PyQt5.QtGui</span> <span class="kn">import</span> <span class="n">QDesktopServices</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtGui</span> <span class="kn">import</span> <span class="n">QDesktopServices</span><span class="p">,</span> <span class="n">QResizeEvent</span>
 <span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="kn">import</span> <span class="n">QMainWindow</span><span class="p">,</span> <span class="n">QMessageBox</span>
-<span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="kn">import</span> <span class="n">pyqtSlot</span><span class="p">,</span> <span class="n">QEvent</span><span class="p">,</span> <span class="n">pyqtSignal</span><span class="p">,</span> <span class="n">QUrl</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="kn">import</span> <span class="n">pyqtSlot</span><span class="p">,</span> <span class="n">pyqtSignal</span><span class="p">,</span> <span class="n">QUrl</span>
 <span class="kn">from</span> <span class="nn">PyQt5</span> <span class="kn">import</span> <span class="n">uic</span>
 
 <span class="kn">from</span> <span class="nn">aroundvision.views.load_source</span> <span class="kn">import</span> <span class="n">LoadSource</span>
 <span class="kn">from</span> <span class="nn">aroundvision.views.about</span> <span class="kn">import</span> <span class="n">About</span>
 <span class="kn">from</span> <span class="nn">aroundvision.views.video_player</span> <span class="kn">import</span> <span class="n">VideoPlayer</span>
-<span class="kn">from</span> <span class="nn">config.config_manager</span> <span class="kn">import</span> <span class="n">CONF</span>
+<span class="kn">from</span> <span class="nn">aroundvision.config.config_manager</span> <span class="kn">import</span> <span class="n">CONF</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="MainWindow"><a class="viewcode-back" href="../../../index.html#aroundvision.views.mainwindow.MainWindow">[docs]</a><span class="k">class</span> <span class="nc">MainWindow</span><span class="p">(</span><span class="n">QMainWindow</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;AroundVision main window :: improve description&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;AroundVision main window :: it is a subclass of QMainWindow!</span>
+<span class="sd">    We are starting the ui main window (bottom bar with comboboxes: projections,</span>
+<span class="sd">    qualities and faces cube; creating the Video Player and add it to the frame</span>
+<span class="sd">    layout; creating the menu actions: help, about and load source; and creating</span>
+<span class="sd">    general connects like comboboxes).</span>
+
+<span class="sd">    :param model: application model</span>
+<span class="sd">    :type model: Model (MVC)</span>
+<span class="sd">    :param controller: application controller</span>
+<span class="sd">    :type controller: Controller (MVC)&quot;&quot;&quot;</span>
     <span class="c1"># Signals</span>
     <span class="n">resize_img</span> <span class="o">=</span> <span class="n">pyqtSignal</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">controller</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method for main window.&quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Starting building main window!&quot;</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-
         <span class="c1"># variables</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">controller</span> <span class="o">=</span> <span class="n">controller</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">current_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mainwindow_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_dir</span><span class="p">,</span> <span class="n">CONF</span><span class="o">.</span><span class="n">mainwindow_filename</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stylesheet_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_dir</span><span class="p">,</span> <span class="n">CONF</span><span class="o">.</span><span class="n">stylesheet_filename</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">projections</span> <span class="o">=</span> <span class="n">CONF</span><span class="o">.</span><span class="n">projections</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_source_window</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">installEventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-
-        <span class="c1"># load ui&#39;s</span>
-        <span class="n">uic</span><span class="o">.</span><span class="n">loadUi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mainwindow_filename</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">load_stylesheet</span><span class="p">())</span>
+        <span class="c1"># initialize ui&#39;s</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">video_player</span> <span class="o">=</span> <span class="n">VideoPlayer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="p">)</span>             <span class="c1"># video player</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_ui</span><span class="p">(</span><span class="n">CONF</span><span class="o">.</span><span class="n">mainwindow_filename</span><span class="p">,</span> <span class="n">CONF</span><span class="o">.</span><span class="n">stylesheet_filename</span><span class="p">)</span>  <span class="c1"># initialize main window</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fill_bottom_bar</span><span class="p">(</span><span class="n">CONF</span><span class="o">.</span><span class="n">projections</span><span class="p">,</span> <span class="n">CONF</span><span class="o">.</span><span class="n">qualities</span><span class="p">,</span> <span class="n">CONF</span><span class="o">.</span><span class="n">faces_cube</span><span class="p">)</span>  <span class="c1"># fill comboboxes</span>
 
         <span class="c1"># Register callback for projections because we just enable</span>
         <span class="c1"># face_cube combobox when the projection is &quot;Cube Map&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">selected_projection</span><span class="o">.</span><span class="n">register_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">face_cube</span><span class="p">)</span>
 
-        <span class="c1"># Configurations</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fill_bottom_bar</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">selected_roi_bitrate</span> <span class="o">=</span> <span class="n">CONF</span><span class="o">.</span><span class="n">roi_bitrate</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">selected_roi_quality</span> <span class="o">=</span> <span class="n">CONF</span><span class="o">.</span><span class="n">roi_quality</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">frame_rate</span> <span class="o">=</span> <span class="n">CONF</span><span class="o">.</span><span class="n">frame_rate</span>
-
-        <span class="c1"># Add displayer to layout</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">video_player</span> <span class="o">=</span> <span class="n">VideoPlayer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">frame_verticalLayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">video_player</span><span class="o">.</span><span class="n">main_displayer</span><span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_connects</span><span class="p">()</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Main window was built!&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_set_connects</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Set connects here&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_initialize_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mainwindow_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stylesheet_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize ui main window: load ui, set stylesheet, fill bottom bars, add video player to layout!&quot;&quot;&quot;</span>
+        <span class="c1"># load ui&#39;s and set stylesheet</span>
+        <span class="n">uic</span><span class="o">.</span><span class="n">loadUi</span><span class="p">(</span><span class="n">mainwindow_file</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">load_stylesheet</span><span class="p">(</span><span class="n">stylesheet_file</span><span class="p">))</span>
+
+        <span class="c1"># main settings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">installEventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">showMaximized</span><span class="p">()</span>
+
+        <span class="c1"># Add displayer to layout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_verticalLayout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">video_player</span><span class="o">.</span><span class="n">main_displayer</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_connects</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Setting connects here&quot;&quot;&quot;</span>
         <span class="c1"># top bar</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">actionLoad_Source</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">open_load_source</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">actionHelp</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">open_help</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionHelp</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">open_help</span><span class="p">,</span> <span class="n">CONF</span><span class="o">.</span><span class="n">docs_url</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">actionAbout</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">open_about</span><span class="p">)</span>
         <span class="c1"># bottom bar</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">proj_comboBox</span><span class="o">.</span><span class="n">activated</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">change_projection</span><span class="p">)</span>
@@ -215,42 +221,61 @@
         <span class="c1"># For video player resize</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">resize_img</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">video_player</span><span class="o">.</span><span class="n">resize_image</span><span class="p">)</span>
 
-<div class="viewcode-block" id="MainWindow.fill_bottom_bar"><a class="viewcode-back" href="../../../index.html#aroundvision.views.mainwindow.MainWindow.fill_bottom_bar">[docs]</a>    <span class="k">def</span> <span class="nf">fill_bottom_bar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MainWindow.fill_bottom_bar"><a class="viewcode-back" href="../../../index.html#aroundvision.views.mainwindow.MainWindow.fill_bottom_bar">[docs]</a>    <span class="k">def</span> <span class="nf">fill_bottom_bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">projections</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">qualities</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">faces_cube</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Fill bottom bar comboboxes with values defined in config file.</span>
-<span class="sd">        Comboboxes: Projections, Quality, Faces Cube.</span>
+<span class="sd">        Comboboxes: Projections, Quality, Faces Cube (just enabled when Cube-Map projection is selected).</span>
+
+<span class="sd">        :param projections: list with projections from configuration</span>
+<span class="sd">        :type projections: list</span>
+<span class="sd">        :param qualities: list with qualities from configuration</span>
+<span class="sd">        :type qualities: list</span>
+<span class="sd">        :param faces_cube: list with faces cube from configuration</span>
+<span class="sd">        :type faces_cube: list</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">proj_comboBox</span><span class="o">.</span><span class="n">addItems</span><span class="p">([</span><span class="n">proj</span><span class="p">[</span><span class="s2">&quot;proj_name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">proj</span> <span class="ow">in</span> <span class="n">CONF</span><span class="o">.</span><span class="n">projections</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">quality_comboBox</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span><span class="n">CONF</span><span class="o">.</span><span class="n">qualities</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cube_comboBox</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span><span class="n">CONF</span><span class="o">.</span><span class="n">faces_cube</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proj_comboBox</span><span class="o">.</span><span class="n">addItems</span><span class="p">([</span><span class="n">proj</span><span class="p">[</span><span class="s2">&quot;proj_name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">proj</span> <span class="ow">in</span> <span class="n">projections</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quality_comboBox</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span><span class="n">qualities</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cube_comboBox</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span><span class="n">faces_cube</span><span class="p">)</span>
 
         <span class="c1"># Assign default values to model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">selected_projection</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">proj_comboBox</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">selected_quality</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality_comboBox</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">selected_cube_face</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cube_comboBox</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">selected_projection_api</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> \
-            <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s2">&quot;proj_api_name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">CONF</span><span class="o">.</span><span class="n">projections</span> <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;proj_name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">selected_projection</span><span class="o">.</span><span class="n">value</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span></div>
+            <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s2">&quot;proj_api_name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">projections</span> <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;proj_name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">selected_projection</span><span class="o">.</span><span class="n">value</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># check face cube</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">face_cube</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">selected_projection</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MainWindow.eventFilter"><a class="viewcode-back" href="../../../index.html#aroundvision.views.mainwindow.MainWindow.eventFilter">[docs]</a>    <span class="k">def</span> <span class="nf">eventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;evetFilter: used to resize image when window changes.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># resize event?</span>
-        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">QEvent</span><span class="o">.</span><span class="n">Resize</span><span class="p">:</span>
-            <span class="c1"># yes, let&#39;s emit a signal to video_player resize the image</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">resize_img</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+<div class="viewcode-block" id="MainWindow.face_cube"><a class="viewcode-back" href="../../../index.html#aroundvision.views.mainwindow.MainWindow.face_cube">[docs]</a>    <span class="k">def</span> <span class="nf">face_cube</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">projection</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;When projection is &quot;Cube Map&quot; we have to enable the combobox face_cube!</span>
 
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">eventFilter</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span></div>
+<span class="sd">        :param projection: selected projection</span>
+<span class="sd">        :type projection: str&quot;&quot;&quot;</span>
+        <span class="n">is_cube</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">projection</span> <span class="o">==</span> <span class="s2">&quot;Cube-Map&quot;</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cube_comboBox</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="n">is_cube</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MainWindow.load_stylesheet"><a class="viewcode-back" href="../../../index.html#aroundvision.views.mainwindow.MainWindow.load_stylesheet">[docs]</a>    <span class="k">def</span> <span class="nf">load_stylesheet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Load stylesheet and return a string&quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stylesheet_filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<div class="viewcode-block" id="MainWindow.resizeEvent"><a class="viewcode-back" href="../../../index.html#aroundvision.views.mainwindow.MainWindow.resizeEvent">[docs]</a>    <span class="k">def</span> <span class="nf">resizeEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">QResizeEvent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;resizeEvent: emit signal (resize_img) to video_player</span>
+<span class="sd">         resize the image when window resized.&quot;&quot;&quot;</span>
+        <span class="c1"># let&#39;s emit a signal to video_player resize the image</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resize_img</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MainWindow.load_stylesheet"><a class="viewcode-back" href="../../../index.html#aroundvision.views.mainwindow.MainWindow.load_stylesheet">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">load_stylesheet</span><span class="p">(</span><span class="n">stylesheet_filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Load stylesheet and return a string.</span>
+
+<span class="sd">        :param stylesheet_filename: stylesheet filename (.css)</span>
+<span class="sd">        :param stylesheet_filename: str&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">stylesheet_filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="MainWindow.change_projection"><a class="viewcode-back" href="../../../index.html#aroundvision.views.mainwindow.MainWindow.change_projection">[docs]</a>    <span class="nd">@pyqtSlot</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">change_projection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">projection</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;slot: change projection in model when user change projection in combobox.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;slot: change projection in model when user change projection in combobox</span>
+<span class="sd">         and get_frame_info from API in order to update the frame info.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">selected_projection</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">projection</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">selected_projection_api</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> \
-            <span class="nb">str</span><span class="p">([</span><span class="n">p</span><span class="p">[</span><span class="s2">&quot;proj_api_name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">CONF</span><span class="o">.</span><span class="n">projections</span> <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;proj_name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">projection</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+            <span class="nb">str</span><span class="p">([</span><span class="n">p</span><span class="p">[</span><span class="s2">&quot;proj_api_name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">projections</span> <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;proj_name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">projection</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="c1"># get_frame_info from API in order to update the frame info</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">get_frame_info</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="MainWindow.change_quality"><a class="viewcode-back" href="../../../index.html#aroundvision.views.mainwindow.MainWindow.change_quality">[docs]</a>    <span class="nd">@pyqtSlot</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
@@ -265,26 +290,21 @@
 
 <div class="viewcode-block" id="MainWindow.open_load_source"><a class="viewcode-back" href="../../../index.html#aroundvision.views.mainwindow.MainWindow.open_load_source">[docs]</a>    <span class="nd">@pyqtSlot</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">open_load_source</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;slot: display the load source window to set api endpoint..&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;slot: display the load source window to user set the application settings!&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">load_source_window</span> <span class="o">=</span> <span class="n">LoadSource</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">load_source_window</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="MainWindow.open_about"><a class="viewcode-back" href="../../../index.html#aroundvision.views.mainwindow.MainWindow.open_about">[docs]</a>    <span class="nd">@pyqtSlot</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">open_about</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Slot: display about window!&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">about_window</span> <span class="o">=</span> <span class="n">About</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">about_window</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+        <span class="n">about_window</span> <span class="o">=</span> <span class="n">About</span><span class="p">()</span>
+        <span class="n">about_window</span><span class="o">.</span><span class="n">open_about</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="MainWindow.open_help"><a class="viewcode-back" href="../../../index.html#aroundvision.views.mainwindow.MainWindow.open_help">[docs]</a>    <span class="nd">@pyqtSlot</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">open_help</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Open aroundvision docs in browser.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">QDesktopServices</span><span class="o">.</span><span class="n">openUrl</span><span class="p">(</span><span class="n">QUrl</span><span class="p">(</span><span class="n">CONF</span><span class="o">.</span><span class="n">docs_url</span><span class="p">)):</span>
-            <span class="n">QMessageBox</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;Open Url&#39;</span><span class="p">,</span> <span class="s1">&#39;Could not open url!&#39;</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="MainWindow.face_cube"><a class="viewcode-back" href="../../../index.html#aroundvision.views.mainwindow.MainWindow.face_cube">[docs]</a>    <span class="k">def</span> <span class="nf">face_cube</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">projection</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;when projection is &quot;Cube Map&quot; we enable the combobox face_cube!&quot;&quot;&quot;</span>
-        <span class="n">is_cube</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">projection</span> <span class="o">==</span> <span class="s2">&quot;Cube-Map&quot;</span> <span class="k">else</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cube_comboBox</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="n">is_cube</span><span class="p">)</span></div></div>
+<div class="viewcode-block" id="MainWindow.open_help"><a class="viewcode-back" href="../../../index.html#aroundvision.views.mainwindow.MainWindow.open_help">[docs]</a>    <span class="nd">@pyqtSlot</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">open_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Open aroundvision docs in browser (Sphinx docs).&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">QDesktopServices</span><span class="o">.</span><span class="n">openUrl</span><span class="p">(</span><span class="n">QUrl</span><span class="p">(</span><span class="n">docs_url</span><span class="p">)):</span>
+            <span class="n">QMessageBox</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;Open Url&#39;</span><span class="p">,</span> <span class="s1">&#39;Could not open url!&#39;</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

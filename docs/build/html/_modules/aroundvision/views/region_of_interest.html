@@ -149,7 +149,7 @@
 <span class="kn">from</span> <span class="nn">PyQt5.QtGui</span> <span class="kn">import</span> <span class="n">QIcon</span><span class="p">,</span> <span class="n">QPixmap</span>
 <span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="kn">import</span> <span class="n">QWidget</span><span class="p">,</span> <span class="n">QToolButton</span>
 
-<span class="kn">from</span> <span class="nn">config.config_manager</span> <span class="kn">import</span> <span class="n">CONF</span>
+<span class="kn">from</span> <span class="nn">aroundvision.config.config_manager</span> <span class="kn">import</span> <span class="n">CONF</span>
 <span class="kn">from</span> <span class="nn">aroundvision.views.displayer</span> <span class="kn">import</span> <span class="n">ImageWidget</span>
 <span class="kn">from</span> <span class="nn">aroundvision.views.roi_settings</span> <span class="kn">import</span> <span class="n">RoiSettings</span>
 
@@ -205,7 +205,7 @@
                 <span class="c1">#  self.image.scaled(self.main_displayer.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">roi_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">roi_image</span><span class="o">.</span><span class="n">scaled</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">roi_displayer</span><span class="o">.</span><span class="n">size</span><span class="p">(),</span>
                                                                    <span class="n">Qt</span><span class="o">.</span><span class="n">IgnoreAspectRatio</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">SmoothTransformation</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">roi_displayer</span><span class="o">.</span><span class="n">setImage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">roi_image</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">roi_displayer</span><span class="o">.</span><span class="n">set_image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">roi_image</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">eventFilter</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span></div>
 

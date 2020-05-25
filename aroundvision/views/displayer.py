@@ -1,12 +1,5 @@
 
-"""
-
-"""
-
-import cv2
-import numpy as np
-
-from PyQt5.QtGui import QPainter, QIcon, QPixmap, QImage, QResizeEvent
+from PyQt5.QtGui import QPainter, QIcon, QPixmap, QImage, QResizeEvent, QPaintEvent
 from PyQt5.QtWidgets import QWidget, QApplication, QRubberBand, QToolButton, QVBoxLayout
 from PyQt5.QtCore import QPoint, QRect, QSize, Qt, pyqtSlot
 
@@ -15,18 +8,25 @@ from aroundvision.views.loading_screen import LoadingScreen
 
 
 class ImageWidget(QWidget):
-    """
-    ImageWidget: display images using setImage and paintEvent.
-    The configure_tools is used to set play/pause buttons.
+    """ImageWidget: display images using setImage and paintEvent.
+    The configure_tools are used to set play/pause buttons.
     The methods related with mouse are prepared to ROI task.
+
+    :param parent: who calls this
+    :type parent: VideoPlayer
+    :param model: application model
+    :type model: Model (MVC)
+    :param settings: displayer settings
+    :type settings: QWdidget
     """
     def __init__(self, parent=None, model=None, settings=None):
+        """Constructor for ImageWidget."""
         super(ImageWidget, self).__init__(parent)
         self.parent = parent
         self.image = None
         self.model = model
         self.settings = settings
-        self.loading = None
+        self.loading = None  # Loading Screen
         # select area
         self.rubber_band = QRubberBand(QRubberBand.Rectangle, self)
         self.origin = QPoint()
@@ -56,12 +56,18 @@ class ImageWidget(QWidget):
         self.play_toolButton.setStyleSheet("background-color: rgba(122, 122, 122, 0);"
                                            "border: 0px;")
 
-    def setImage(self, image):
+    def set_image(self, image: QImage) -> None:
+        """Set image and refreshing the event queue.
+
+        :param image: image to be displayer
+        :type image: QImage
+        """
         self.image = image
         self.update()
         QApplication.processEvents()  # refreshing the event queue
 
-    def paintEvent(self, event):
+    def paintEvent(self, event: QPaintEvent) -> None:
+        """Override paint event to draw image."""
         qp = QPainter()
         qp.begin(self)
         if self.image:
@@ -115,12 +121,3 @@ class ImageWidget(QWidget):
             self.parent.start_timer.emit()
             # enable again the play button..
             self.play_toolButton.setEnabled(True)
-
-    # this was used in imshow with opencv example ..
-    #@staticmethod
-    #def convert_qimage_to_mat(in_image):
-    #    """Converts a QImage into an opencv MAT format"""
-    #    img = in_image.convertToFormat(QImage.Format_RGB32)
-    #    ptr = img.bits()
-    #    ptr.setsize(img.byteCount())
-    #    return np.array(ptr).reshape(img.height(), img.width(), QImage.Format_RGB32)  # Copies the data

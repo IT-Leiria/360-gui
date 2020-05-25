@@ -1,8 +1,4 @@
 
-"""
-
-"""
-
 import logging
 from ast import literal_eval
 import urllib
@@ -17,23 +13,27 @@ logger = logging.getLogger(__name__)
 
 
 class Controller(object):
-    """
-    Application Controller:
-    - our iteraction with api client..
+    """Application Controller: our interaction with api client.
+
+    :param model: application model
+    :type model: Model
     """
     def __init__(self, model):
+        """Constructor for Controller."""
+        logger.info("Starting building controller!")
         self.model = model
 
-        # Assign values from configurations
+        # Start requests session..
         self.session = requests.Session()
-        self.model.api_endpoint.value = CONF.api_endpoint
-        self.model.stream_index.value = CONF.api_selected_stream_idx
 
         # Request initial data from configuration
         self.get_stream_list()
         self.select_stream()
 
     def get_frame_from_api(self):
+        """While we are capturing values (model.capturing = True) we will
+        get frames from API and store them in model.image.queue.
+        Here we are using urllib because has a better performance than requests."""
         while self.model.capturing.value:
             logger.info("Get frame from API : " + self.model.api_endpoint.value)
 
@@ -64,7 +64,8 @@ class Controller(object):
             logger.warning("Connection Error {0}".format(str(err)))
 
     def get_frame_info(self):
-        """Get frame info from selected stream on API"""
+        """Get frame info from selected stream on API. Here we are storing
+        the following values in our model: frame width, height, shape, len and bytes per line."""
         get_frame_info_path = self.model.api_endpoint.value + CONF.api_get_frame_info + \
                               "?projection=" + self.model.selected_projection_api.value
         logger.info("Getting frame info in API {0}".format(get_frame_info_path))
@@ -87,8 +88,8 @@ class Controller(object):
 
     def get_stream_list(self):
         """Get Stream List from API:
-           - try to connect to API
-           - return message: exception error or successfully status code
+            - try to connect to API
+            - return message: exception error or successfully status code
         """
         logger.info("Connecting to {0}".format(self.model.api_endpoint.value + CONF.api_get_stream_list_path))
 
@@ -120,5 +121,10 @@ class Controller(object):
             return str(err)
 
     def get_rgb_from_yuv(self, raw):
+        """Convert YUV420 to RGB array!
+
+        :param raw: bytearray received by API
+        :type raw: bytearray
+        """
         yuv = np.frombuffer(raw, dtype=np.uint8).reshape(self.model.shape.value)
         return cv2.cvtColor(yuv, cv2.COLOR_YUV420P2BGR)  # YV12)

@@ -125,6 +125,11 @@ Aroundvision views
 .. automodule:: aroundvision.views.popup
    :members:
 
+10. Loading Screen
+~~~~~~~~~~~~~~~~~~
+.. automodule:: aroundvision.views.loading_screen
+   :members:
+
 Aroundvision models
 -------------------
 .. automodule:: aroundvision.models.models

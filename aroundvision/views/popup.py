@@ -1,6 +1,4 @@
 
-import os
-
 from PyQt5 import uic
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QDialog
@@ -9,18 +7,18 @@ from aroundvision.config.config_manager import CONF
 
 
 class PopUp(QDialog):
-    """
-    PopUp
+    """This is a generic Popup where the user just have to provide the text message!
+
+    :param text_message: message to be displayed in popup
+    :type text_message: str
     """
     def __init__(self, text_message):
         super().__init__()
-
         # variables
-        self.current_dir = os.path.dirname(__file__)
-        self.popup_filename = os.path.join(self.current_dir, CONF.popup_filename)
         self.text_message = text_message
 
-        uic.loadUi(self.popup_filename, self)
+        # initialize ui
+        uic.loadUi(CONF.popup_filename, self)
 
         # Assign value to label..
         self.text_label.setText(self.text_message)
@@ -30,4 +28,5 @@ class PopUp(QDialog):
 
     @pyqtSlot()
     def confirm_slot(self):
+        """Slot to close the popup window!"""
         self.close()

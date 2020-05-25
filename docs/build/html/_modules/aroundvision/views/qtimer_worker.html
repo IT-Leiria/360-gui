@@ -146,27 +146,36 @@
 
 
 <div class="viewcode-block" id="TimerWorker"><a class="viewcode-back" href="../../../index.html#aroundvision.views.qtimer_worker.TimerWorker">[docs]</a><span class="k">class</span> <span class="nc">TimerWorker</span><span class="p">(</span><span class="n">QObject</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    TimerWorker is just a simple timer with start and stop.</span>
-<span class="sd">    - frame_rate: loop every x seconds</span>
-<span class="sd">    - show_frame: method called when timeout..</span>
+    <span class="sd">&quot;&quot;&quot;TimerWorker is just a simple timer with start and stop.</span>
+
+<span class="sd">    :param frame_rate: loop every x seconds</span>
+<span class="sd">    :type frame_rate: int</span>
+<span class="sd">    :param show_frame: method called when timeout..</span>
+<span class="sd">    :type show_frame: function</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Signals</span>
     <span class="n">processed</span> <span class="o">=</span> <span class="n">pyqtSignal</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_rate</span><span class="p">,</span> <span class="n">show_frame</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_rate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show_frame</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor for TimerWorker.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">frame_rate</span> <span class="o">=</span> <span class="n">frame_rate</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">show_frame</span> <span class="o">=</span> <span class="n">show_frame</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_timer</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="nd">@pyqtSlot</span><span class="p">()</span>
+<div class="viewcode-block" id="TimerWorker.start"><a class="viewcode-back" href="../../../index.html#aroundvision.views.qtimer_worker.TimerWorker.start">[docs]</a>    <span class="nd">@pyqtSlot</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Start timer and connect with the slot received!&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_timer</span> <span class="o">=</span> <span class="n">QTimer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_timer</span><span class="o">.</span><span class="n">timeout</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">show_frame</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_timer</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_rate</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_timer</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_rate</span><span class="p">)</span></div>
 
-    <span class="nd">@pyqtSlot</span><span class="p">()</span>
+<div class="viewcode-block" id="TimerWorker.stop"><a class="viewcode-back" href="../../../index.html#aroundvision.views.qtimer_worker.TimerWorker.stop">[docs]</a>    <span class="nd">@pyqtSlot</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_timer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
+        <span class="sd">&quot;&quot;&quot;If we have timer stop it!&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timer</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_timer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div></div>
+
 </pre></div>
 
            </div>

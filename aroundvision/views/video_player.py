@@ -1,3 +1,4 @@
+
 import logging
 import threading
 
@@ -13,22 +14,34 @@ logger = logging.getLogger(__name__)
 
 
 class VideoPlayer(QWidget):
-    """
-    VideoPlayer:
-        - initialize ImageWidget, TimeWorker and RegionOfInterest
-        - this control all video flow
+    """VideoPlayer control all the video flow. Basically will do:
+        - initialize the ImageWidget: where the images are visualized, the play button is\
+        created, allows the region of interest..
+        - create the capture thread in order to get frames from api (controller)\
+        and store them in queue (Play activated)
+        - create a qtimer thread in order to every frame_rate (fps) get a frame\
+        from the queue and display it in ImageWidget.. (Play activated)
+        - create a loading screen with animation gif defined in configuration file,\
+        this is displayed during x seconds (loading_gif_time in config..) (Play activated)
+
+    :param model: application model
+    :type model: Model (MVC)
+    :param controller: application controller
+    :type controller: Controller (MVC)
     """
     # Signals
     start_timer = pyqtSignal()
     stop_timer = pyqtSignal()
 
-    def __init__(self, parent=None, model=None, controller=None):
+    def __init__(self, model=None, controller=None):
+        """Constructor for Video Player!"""
         super().__init__()
         self.model = model
         self.controller = controller
         self.main_displayer = ImageWidget(self, self.model)  # main images displayer
         self.image = None
         self.roi_window = None
+        self.capture_thread = None  # Thread to call get frames in controller
 
         self._create_timer_thread()
         self._set_connects()
@@ -39,39 +52,42 @@ class VideoPlayer(QWidget):
 
     def _create_timer_thread(self):
         """Create the timer thread and the capture thread. Those processes are in different threads
-           in order to not blocking the main thread.
-           - QTimer thread: run QTimer loop every frame_rate and when timeout -> call show_frame (get frame from queue)
-           - Capture thread: get frames from api and insert them in queue (controller)
-           """
-        # Thread to call get frames in controller
-        self.capture_thread = None
-
+        in order to not blocking the main thread.
+            - QTimer thread: run the QTimer loop every frame_rate and when the timeout is reached -> call
+            the show_frame method (get frame from queue and display it..)
+            - Capture thread: get frames from api and insert them in queue (controller)
+        """
         # Thread to run QTimer and initialize QTimer
         self.timer_thread = QThread()
-        self.timer = TimerWorker(self.model.frame_rate, self.show_frame)
+        self.timer = TimerWorker(self.model.frame_rate.value, self.show_frame)
         self.timer.moveToThread(self.timer_thread)
+
+        # connects for timer
         self.stop_timer.connect(self.timer.stop)
         self.start_timer.connect(self.timer.start)
+
+        # let's start timer_thread..
         self.timer_thread.start()
 
     def _set_connects(self):
-        self.main_displayer.play_toolButton.toggled.connect(self.display_frames)  # connect play/pause button
+        """Setting connect for video player:
+            - play_toolButton -> play_button_slot"""
+        self.main_displayer.play_toolButton.toggled.connect(self.play_button_slot)  # connect play/pause button
 
     @pyqtSlot()
     def resize_image(self):
-        """resize image slot used to resize image when window changes.
-        """
-        # yes, is the image is ok?
+        """Slot: used to resize image when window changes."""
+        # yes, Is the image ok?
         if self.image is not None:
             # yes, let's resize
             # at the moment we resize without "KeepAspectRatio", if we want it please use
             # self.image.scaled(self.main_displayer.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            self.main_displayer.setImage(self.image.scaled(self.main_displayer.size(),
-                                                           Qt.IgnoreAspectRatio, Qt.SmoothTransformation))
+            self.main_displayer.set_image(self.image.scaled(self.main_displayer.size(),
+                                                            Qt.IgnoreAspectRatio, Qt.SmoothTransformation))
 
     @pyqtSlot()
-    def display_frames(self):
-        """slot: when user press play, let's display the frames."""
+    def play_button_slot(self):
+        """Slot: when user press play, let's pause or display the frames."""
         # play?
         if self.main_displayer.play_toolButton.isChecked():
             # yes, wow let's get the frames and display them.
@@ -99,29 +115,36 @@ class VideoPlayer(QWidget):
 
     @pyqtSlot()
     def show_frame(self):
-        """Show frame: get image form queue -> if exists, scale and set image in displayer!"""
+        """Slot: Show frame: get image from the queue -> if exists, scale and set image in displayer!"""
         try:
-            # get image from thread
+            # get image from queue
             img = self.model.image_queue.get(False)
             self.image = QImage(img.data, self.model.width.value, self.model.height.value,
                                 self.model.bytes_per_line.value, QImage.Format_RGB888)
 
             # scale the image to main_displayer size without "KeepAspectRatio"
             self.image = self.image.scaled(self.main_displayer.size(), Qt.IgnoreAspectRatio)
-            self.main_displayer.setImage(self.image)
+            self.main_displayer.set_image(self.image)
 
             # is the region of interest activated?
             if self.model.roi_activated.value:
                 # yes, let's set roi image
                 self.model.roi_image = self.image.copy(self.model.roi_geometry).scaled(
                     self.roi_window.roi_displayer.size(), Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
-                self.roi_window.roi_displayer.setImage(self.model.roi_image)
+                self.roi_window.roi_displayer.set_image(self.model.roi_image)
         except Exception as e:
             logger.info("Queue empty " + str(e))
 
     def display_roi(self, roi_activated):
         """Display Region of interest: create roi window and set image from saved in model.."""
-        if roi_activated:
+        # Do we already have a ROI window?
+        if not self.roi_window and roi_activated:
+            # no, let's create one..
             self.roi_window = RegionOfInterest(self.model)
-            self.roi_window.roi_displayer.setImage(self.model.roi_image)
+            self.roi_window.roi_displayer.set_image(self.model.roi_image)
             self.roi_window.show()
+
+        # Is the roi window was deactivated?
+        if not roi_activated:
+            # yes, let's set a roi window as none..
+            self.roi_window = None

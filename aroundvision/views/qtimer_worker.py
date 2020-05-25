@@ -3,14 +3,18 @@ from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QTimer
 
 
 class TimerWorker(QObject):
+    """TimerWorker is just a simple timer with start and stop.
+
+    :param frame_rate: loop every x seconds
+    :type frame_rate: int
+    :param show_frame: method called when timeout..
+    :type show_frame: function
     """
-    TimerWorker is just a simple timer with start and stop.
-    - frame_rate: loop every x seconds
-    - show_frame: method called when timeout..
-    """
+    # Signals
     processed = pyqtSignal()
 
-    def __init__(self, frame_rate, show_frame):
+    def __init__(self, frame_rate=None, show_frame=None):
+        """Constructor for TimerWorker."""
         super().__init__()
         self.frame_rate = frame_rate
         self.show_frame = show_frame
@@ -18,8 +22,7 @@ class TimerWorker(QObject):
 
     @pyqtSlot()
     def start(self):
-        """Start time and connect with slot received!"""
-        print("START worker")
+        """Start timer and connect with the slot received!"""
         self._timer = QTimer(self)
         self._timer.timeout.connect(self.show_frame)
         self._timer.start(self.frame_rate)

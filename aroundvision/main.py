@@ -17,7 +17,7 @@ from PyQt5.QtWidgets import QApplication
 
 
 def input_arguments():
-    """Argparse input args"""
+    """Argparse with help description and input args!"""
     parser = argparse.ArgumentParser(
         description="The AROUNDVISION is a tool to visualize 360 images from an API "
                     "in different projections. Additionally, it allows the user to "
@@ -38,7 +38,7 @@ def run_app():
 
 
 def main():
-    """Main Function"""
+    """Main Function: setup logging and run_app!"""
     args = input_arguments()
     setup_logging(CONF.log_filename, getattr(logging, CONF.log_level), CONF.log_format)
     run_app()

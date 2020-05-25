@@ -142,15 +142,11 @@
             
   <h1>Source code for aroundvision.controllers.controller</h1><div class="highlight"><pre>
 <span></span>
-<span class="sd">&quot;&quot;&quot;</span>
-
-<span class="sd">&quot;&quot;&quot;</span>
-
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">ast</span> <span class="kn">import</span> <span class="n">literal_eval</span>
 <span class="kn">import</span> <span class="nn">urllib</span>
 
-<span class="kn">from</span> <span class="nn">config.config_manager</span> <span class="kn">import</span> <span class="n">CONF</span>
+<span class="kn">from</span> <span class="nn">aroundvision.config.config_manager</span> <span class="kn">import</span> <span class="n">CONF</span>
 
 <span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -160,30 +156,31 @@
 
 
 <div class="viewcode-block" id="Controller"><a class="viewcode-back" href="../../../index.html#aroundvision.controllers.controller.Controller">[docs]</a><span class="k">class</span> <span class="nc">Controller</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Application Controller:</span>
-<span class="sd">    - our iteraction with api client..</span>
+    <span class="sd">&quot;&quot;&quot;Application Controller: our interaction with api client.</span>
+
+<span class="sd">    :param model: application model</span>
+<span class="sd">    :type model: Model</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor for Controller.&quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Starting building controller!&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
 
-        <span class="c1"># Assign values from configurations</span>
+        <span class="c1"># Start requests session..</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">api_endpoint</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">CONF</span><span class="o">.</span><span class="n">api_endpoint</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">stream_index</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">CONF</span><span class="o">.</span><span class="n">api_selected_stream_idx</span>
 
         <span class="c1"># Request initial data from configuration</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">get_stream_list</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">select_stream</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">get_frame_from_api</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Controller.get_frame_from_api"><a class="viewcode-back" href="../../../index.html#aroundvision.controllers.controller.Controller.get_frame_from_api">[docs]</a>    <span class="k">def</span> <span class="nf">get_frame_from_api</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;While we are capturing values (model.capturing = True) we will</span>
+<span class="sd">        get frames from API and store them in model.image.queue.</span>
+<span class="sd">        Here we are using urllib because has a better performance than requests.&quot;&quot;&quot;</span>
         <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">capturing</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Get frame from API : &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">api_endpoint</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
             <span class="c1"># Get frame</span>
-            <span class="c1">#r = self.session.get(self.model.api_endpoint.value + CONF.api_get_frame_raw_path + &quot;?projection=&quot; +</span>
-            <span class="c1">#                     self.model.selected_projection_api.value, stream=True, verify=False).raw.read()</span>
-
             <span class="n">r</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">api_endpoint</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="n">CONF</span><span class="o">.</span><span class="n">api_get_frame_raw_path</span> <span class="o">+</span> <span class="s2">&quot;?projection=&quot;</span> <span class="o">+</span>
                                        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">selected_projection_api</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
             <span class="n">content</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
@@ -193,7 +190,7 @@
             <span class="c1"># Is the content has the expected size?</span>
             <span class="k">if</span> <span class="n">size_content</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">frame_len</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;The frame has the expected size, let&#39;s insert it in the images queue!&quot;</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">image_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_rgb_from_yuv</span><span class="p">(</span><span class="n">content</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">image_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_rgb_from_yuv</span><span class="p">(</span><span class="n">content</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Controller.select_stream"><a class="viewcode-back" href="../../../index.html#aroundvision.controllers.controller.Controller.select_stream">[docs]</a>    <span class="k">def</span> <span class="nf">select_stream</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Select Stream index in API&quot;&quot;&quot;</span>
@@ -210,7 +207,8 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Connection Error </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">)))</span></div>
 
 <div class="viewcode-block" id="Controller.get_frame_info"><a class="viewcode-back" href="../../../index.html#aroundvision.controllers.controller.Controller.get_frame_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_frame_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get frame info from selected stream on API&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Get frame info from selected stream on API. Here we are storing</span>
+<span class="sd">        the following values in our model: frame width, height, shape, len and bytes per line.&quot;&quot;&quot;</span>
         <span class="n">get_frame_info_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">api_endpoint</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="n">CONF</span><span class="o">.</span><span class="n">api_get_frame_info</span> <span class="o">+</span> \
                               <span class="s2">&quot;?projection=&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">selected_projection_api</span><span class="o">.</span><span class="n">value</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Getting frame info in API </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">get_frame_info_path</span><span class="p">))</span>
@@ -233,8 +231,8 @@
 
 <div class="viewcode-block" id="Controller.get_stream_list"><a class="viewcode-back" href="../../../index.html#aroundvision.controllers.controller.Controller.get_stream_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_stream_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get Stream List from API:</span>
-<span class="sd">           - try to connect to API</span>
-<span class="sd">           - return message: exception error or successfully status code</span>
+<span class="sd">            - try to connect to API</span>
+<span class="sd">            - return message: exception error or successfully status code</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Connecting to </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">api_endpoint</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="n">CONF</span><span class="o">.</span><span class="n">api_get_stream_list_path</span><span class="p">))</span>
 
@@ -242,16 +240,22 @@
             <span class="c1"># get stream list from API</span>
             <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">api_endpoint</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="n">CONF</span><span class="o">.</span><span class="n">api_get_stream_list_path</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-            <span class="c1"># update our model with values</span>
-            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">())):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">stream_list</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="s2">&quot;stream&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-                                                                   <span class="s2">&quot;bytes_per_pixel&quot;</span><span class="p">:</span> <span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="s2">&quot;number_of_layers&quot;</span><span class="p">:</span> <span class="n">s</span><span class="p">[</span><span class="mi">4</span><span class="p">]}</span>
+            <span class="c1"># Success request?</span>
+            <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+                <span class="c1"># yes, let&#39;s update our model with values</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">())):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">stream_list</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="s2">&quot;stream&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> \
+                        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                         <span class="s2">&quot;bytes_per_pixel&quot;</span><span class="p">:</span> <span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="s2">&quot;number_of_layers&quot;</span><span class="p">:</span> <span class="n">s</span><span class="p">[</span><span class="mi">4</span><span class="p">]}</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">api_connected</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Connection Status </span><span class="si">{0}</span><span class="s2"> and our stream list </span><span class="si">{1}</span><span class="s2">!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">stream_list</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">api_connected</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Connection Status </span><span class="si">{0}</span><span class="s2"> and our stream list </span><span class="si">{1}</span><span class="s2">!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">stream_list</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
 
-            <span class="k">return</span> <span class="s2">&quot;Connection Status </span><span class="si">{0}</span><span class="s2">!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="p">))</span>
+                <span class="k">return</span> <span class="s2">&quot;Connection Status </span><span class="si">{0}</span><span class="s2">!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># no, let&#39;s return warning message</span>
+                <span class="k">return</span> <span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
 
         <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Connection error: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">)))</span>
@@ -259,9 +263,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">stream_list</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
             <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">get_rgb_from_yuv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw</span><span class="p">):</span>
+<div class="viewcode-block" id="Controller.get_rgb_from_yuv"><a class="viewcode-back" href="../../../index.html#aroundvision.controllers.controller.Controller.get_rgb_from_yuv">[docs]</a>    <span class="k">def</span> <span class="nf">get_rgb_from_yuv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convert YUV420 to RGB array!</span>
+
+<span class="sd">        :param raw: bytearray received by API</span>
+<span class="sd">        :type raw: bytearray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">yuv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">yuv</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_YUV420P2BGR</span><span class="p">)</span>  <span class="c1"># YV12)</span></div>
+        <span class="k">return</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">yuv</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_YUV420P2BGR</span><span class="p">)</span>  <span class="c1"># YV12)</span></div></div>
 </pre></div>
 
            </div>

@@ -141,7 +141,8 @@
            <div itemprop="articleBody">
             
   <h1>Source code for aroundvision.views.video_player</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span></span>
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 
 <span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="kn">import</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">QThread</span><span class="p">,</span> <span class="n">pyqtSlot</span><span class="p">,</span> <span class="n">pyqtSignal</span>
@@ -156,22 +157,34 @@
 
 
 <div class="viewcode-block" id="VideoPlayer"><a class="viewcode-back" href="../../../index.html#aroundvision.views.video_player.VideoPlayer">[docs]</a><span class="k">class</span> <span class="nc">VideoPlayer</span><span class="p">(</span><span class="n">QWidget</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    VideoPlayer:</span>
-<span class="sd">        - initialize ImageWidget, TimeWorker and RegionOfInterest</span>
-<span class="sd">        - this control all video flow</span>
+    <span class="sd">&quot;&quot;&quot;VideoPlayer control all the video flow. Basically will do:</span>
+<span class="sd">        - initialize the ImageWidget: where the images are visualized, the play button is\</span>
+<span class="sd">        created, allows the region of interest..</span>
+<span class="sd">        - create the capture thread in order to get frames from api (controller)\</span>
+<span class="sd">        and store them in queue (Play activated)</span>
+<span class="sd">        - create a qtimer thread in order to every frame_rate (fps) get a frame\</span>
+<span class="sd">        from the queue and display it in ImageWidget.. (Play activated)</span>
+<span class="sd">        - create a loading screen with animation gif defined in configuration file,\</span>
+<span class="sd">        this is displayed during x seconds (loading_gif_time in config..) (Play activated)</span>
+
+<span class="sd">    :param model: application model</span>
+<span class="sd">    :type model: Model (MVC)</span>
+<span class="sd">    :param controller: application controller</span>
+<span class="sd">    :type controller: Controller (MVC)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Signals</span>
     <span class="n">start_timer</span> <span class="o">=</span> <span class="n">pyqtSignal</span><span class="p">()</span>
     <span class="n">stop_timer</span> <span class="o">=</span> <span class="n">pyqtSignal</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor for Video Player!&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">controller</span> <span class="o">=</span> <span class="n">controller</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">main_displayer</span> <span class="o">=</span> <span class="n">ImageWidget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>  <span class="c1"># main images displayer</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">roi_window</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">capture_thread</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Thread to call get frames in controller</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_create_timer_thread</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_connects</span><span class="p">()</span>
@@ -182,39 +195,42 @@
 
     <span class="k">def</span> <span class="nf">_create_timer_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create the timer thread and the capture thread. Those processes are in different threads</span>
-<span class="sd">           in order to not blocking the main thread.</span>
-<span class="sd">           - QTimer thread: run QTimer loop every frame_rate and when timeout -&gt; call show_frame (get frame from queue)</span>
-<span class="sd">           - Capture thread: get frames from api and insert them in queue (controller)</span>
-<span class="sd">           &quot;&quot;&quot;</span>
-        <span class="c1"># Thread to call get frames in controller</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">capture_thread</span> <span class="o">=</span> <span class="kc">None</span>
-
+<span class="sd">        in order to not blocking the main thread.</span>
+<span class="sd">            - QTimer thread: run the QTimer loop every frame_rate and when the timeout is reached -&gt; call</span>
+<span class="sd">            the show_frame method (get frame from queue and display it..)</span>
+<span class="sd">            - Capture thread: get frames from api and insert them in queue (controller)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Thread to run QTimer and initialize QTimer</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timer_thread</span> <span class="o">=</span> <span class="n">QThread</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">timer</span> <span class="o">=</span> <span class="n">TimerWorker</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">frame_rate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_frame</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timer</span> <span class="o">=</span> <span class="n">TimerWorker</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">frame_rate</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_frame</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">moveToThread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timer_thread</span><span class="p">)</span>
+
+        <span class="c1"># connects for timer</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stop_timer</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_timer</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timer</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+
+        <span class="c1"># let&#39;s start timer_thread..</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timer_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_set_connects</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">main_displayer</span><span class="o">.</span><span class="n">play_toolButton</span><span class="o">.</span><span class="n">toggled</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">display_frames</span><span class="p">)</span>  <span class="c1"># connect play/pause button</span>
+        <span class="sd">&quot;&quot;&quot;Setting connect for video player:</span>
+<span class="sd">            - play_toolButton -&gt; play_button_slot&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_displayer</span><span class="o">.</span><span class="n">play_toolButton</span><span class="o">.</span><span class="n">toggled</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">play_button_slot</span><span class="p">)</span>  <span class="c1"># connect play/pause button</span>
 
 <div class="viewcode-block" id="VideoPlayer.resize_image"><a class="viewcode-back" href="../../../index.html#aroundvision.views.video_player.VideoPlayer.resize_image">[docs]</a>    <span class="nd">@pyqtSlot</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">resize_image</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;resize image slot used to resize image when window changes.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># yes, is the image is ok?</span>
+        <span class="sd">&quot;&quot;&quot;Slot: used to resize image when window changes.&quot;&quot;&quot;</span>
+        <span class="c1"># yes, Is the image ok?</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">image</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># yes, let&#39;s resize</span>
             <span class="c1"># at the moment we resize without &quot;KeepAspectRatio&quot;, if we want it please use</span>
             <span class="c1"># self.image.scaled(self.main_displayer.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">main_displayer</span><span class="o">.</span><span class="n">setImage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">scaled</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">main_displayer</span><span class="o">.</span><span class="n">size</span><span class="p">(),</span>
-                                                           <span class="n">Qt</span><span class="o">.</span><span class="n">IgnoreAspectRatio</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">SmoothTransformation</span><span class="p">))</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">main_displayer</span><span class="o">.</span><span class="n">set_image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">scaled</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">main_displayer</span><span class="o">.</span><span class="n">size</span><span class="p">(),</span>
+                                                            <span class="n">Qt</span><span class="o">.</span><span class="n">IgnoreAspectRatio</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">SmoothTransformation</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="VideoPlayer.display_frames"><a class="viewcode-back" href="../../../index.html#aroundvision.views.video_player.VideoPlayer.display_frames">[docs]</a>    <span class="nd">@pyqtSlot</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">display_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;slot: when user press play, let&#39;s display the frames.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="VideoPlayer.play_button_slot"><a class="viewcode-back" href="../../../index.html#aroundvision.views.video_player.VideoPlayer.play_button_slot">[docs]</a>    <span class="nd">@pyqtSlot</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">play_button_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Slot: when user press play, let&#39;s pause or display the frames.&quot;&quot;&quot;</span>
         <span class="c1"># play?</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_displayer</span><span class="o">.</span><span class="n">play_toolButton</span><span class="o">.</span><span class="n">isChecked</span><span class="p">():</span>
             <span class="c1"># yes, wow let&#39;s get the frames and display them.</span>
@@ -225,8 +241,15 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">capture_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;capturing&quot;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">get_frame_from_api</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">capture_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
-            <span class="c1"># Start timer to show image from queue every x seconds</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">start_timer</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+            <span class="c1"># Do we already have images in the queue?</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">image_queue</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+                <span class="c1"># No, let&#39;s Loading frames ... when timeout is reached, the main displayer</span>
+                <span class="c1"># will emit the signal (start_timer), then the Start timer will start showing</span>
+                <span class="c1"># a image from queue every x seconds</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">main_displayer</span><span class="o">.</span><span class="n">set_loading_screen</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># yes, we just pause the video let&#39;s start again..</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">start_timer</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># no, pause the display..</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Pause display 360.&quot;</span><span class="p">)</span>
@@ -235,32 +258,39 @@
 
 <div class="viewcode-block" id="VideoPlayer.show_frame"><a class="viewcode-back" href="../../../index.html#aroundvision.views.video_player.VideoPlayer.show_frame">[docs]</a>    <span class="nd">@pyqtSlot</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">show_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Show frame: get image form queue -&gt; if exists, scale and set image in displayer!&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Slot: Show frame: get image from the queue -&gt; if exists, scale and set image in displayer!&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># get image from thread</span>
+            <span class="c1"># get image from queue</span>
             <span class="n">img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">image_queue</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">QImage</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">width</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">height</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
                                 <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">bytes_per_line</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">QImage</span><span class="o">.</span><span class="n">Format_RGB888</span><span class="p">)</span>
 
             <span class="c1"># scale the image to main_displayer size without &quot;KeepAspectRatio&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">scaled</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">main_displayer</span><span class="o">.</span><span class="n">size</span><span class="p">(),</span> <span class="n">Qt</span><span class="o">.</span><span class="n">IgnoreAspectRatio</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">main_displayer</span><span class="o">.</span><span class="n">setImage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">main_displayer</span><span class="o">.</span><span class="n">set_image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">)</span>
 
             <span class="c1"># is the region of interest activated?</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">roi_activated</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
                 <span class="c1"># yes, let&#39;s set roi image</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">roi_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">roi_geometry</span><span class="p">)</span> <span class="c1">#.scaled(</span>
-                    <span class="c1">#self.roi_window.roi_displayer.size(), Qt.IgnoreAspectRatio, Qt.SmoothTransformation)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">roi_window</span><span class="o">.</span><span class="n">roi_displayer</span><span class="o">.</span><span class="n">setImage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">roi_image</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">roi_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">roi_geometry</span><span class="p">)</span><span class="o">.</span><span class="n">scaled</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">roi_window</span><span class="o">.</span><span class="n">roi_displayer</span><span class="o">.</span><span class="n">size</span><span class="p">(),</span> <span class="n">Qt</span><span class="o">.</span><span class="n">IgnoreAspectRatio</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">SmoothTransformation</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">roi_window</span><span class="o">.</span><span class="n">roi_displayer</span><span class="o">.</span><span class="n">set_image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">roi_image</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Queue empty &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="VideoPlayer.display_roi"><a class="viewcode-back" href="../../../index.html#aroundvision.views.video_player.VideoPlayer.display_roi">[docs]</a>    <span class="k">def</span> <span class="nf">display_roi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">roi_activated</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Display Region of interest: create roi window and set image from saved in model..&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">roi_activated</span><span class="p">:</span>
+        <span class="c1"># Do we already have a ROI window?</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">roi_window</span> <span class="ow">and</span> <span class="n">roi_activated</span><span class="p">:</span>
+            <span class="c1"># no, let&#39;s create one..</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">roi_window</span> <span class="o">=</span> <span class="n">RegionOfInterest</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">roi_window</span><span class="o">.</span><span class="n">roi_displayer</span><span class="o">.</span><span class="n">setImage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">roi_image</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">roi_window</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">roi_window</span><span class="o">.</span><span class="n">roi_displayer</span><span class="o">.</span><span class="n">set_image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">roi_image</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">roi_window</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+        <span class="c1"># Is the roi window was deactivated?</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">roi_activated</span><span class="p">:</span>
+            <span class="c1"># yes, let&#39;s set a roi window as none..</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">roi_window</span> <span class="o">=</span> <span class="kc">None</span></div></div>
 </pre></div>
 
            </div>

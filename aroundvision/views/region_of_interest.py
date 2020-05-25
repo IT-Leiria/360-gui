@@ -62,7 +62,7 @@ class RegionOfInterest(QWidget):
                 #  self.image.scaled(self.main_displayer.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
                 self.model.roi_image = self.model.roi_image.scaled(self.roi_displayer.size(),
                                                                    Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
-                self.roi_displayer.setImage(self.model.roi_image)
+                self.roi_displayer.set_image(self.model.roi_image)
 
         return super().eventFilter(obj, event)
 
