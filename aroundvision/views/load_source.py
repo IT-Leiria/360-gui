@@ -104,6 +104,7 @@ class LoadSource(QWidget):
             popup.exec_()
         else:
             self.model.api_endpoint.value = end_point_current_text
+            self.model.stream_index.value = self.stream_index_lineEdit.text()
             self.controller.select_stream()
             self.close()
 

@@ -92,7 +92,7 @@ class ImageWidget(QWidget):
             if self.model and self.image:
                 img_crop = self.image.copy(self.rubber_band.geometry())
                 self.model.roi_image = img_crop
-                self.model.roi_geometry = self.rubber_band.geometry()
+                self.model.roi_geometry = self.rubber_band.geometry()  # x, y, w, h
                 self.model.roi_activated.value = True
                 # cv2.imshow("ROI", self.convert_qimage_to_mat(img_crop))
 
