@@ -19,6 +19,8 @@ api_configs:
   api_select_stream_path: "select_stream"
   api_get_frame_info: "get_frame_info"
   api_get_frame_raw_path: "get_frame_raw"
+  api_get_viewport_info: "get_viewport_info"
+  api_get_viewport_raw: "get_viewport_raw"
   api_selected_stream_idx: "0"
 frame_rate: 30 # fps
 projections:

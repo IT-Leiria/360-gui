@@ -20,17 +20,26 @@ class Model(object):
         self.roi_geometry = None
         self.selected_roi_bitrate = FieldValue(CONF.roi_bitrate)
         self.selected_roi_quality = FieldValue(CONF.roi_quality)
+        # region of interest display
+        self.roi_image_queue = queue.Queue()
+        self.capturing_roi = FieldValue(False)
+        self.roi_width = FieldValue(None)
+        self.roi_height = FieldValue(None)
+        self.roi_shape = FieldValue(None)
+        self.roi_frame_len = FieldValue(None)
+        self.roi_bytes_per_line = FieldValue(None)
 
         # main display: queue and capturing..
         self.image_queue = queue.Queue()
         self.capturing = FieldValue(False)
+        self.main_displayer_size = FieldValue(None)
 
         # Streams
         self.api_connected = FieldValue(True)
         self.stream_list = FieldValue({})
         self.stream_index = FieldValue(CONF.api_selected_stream_idx)
 
-        # Frame variables
+        # Main Frame variables
         self.width = FieldValue(None)
         self.height = FieldValue(None)
         self.shape = FieldValue(None)

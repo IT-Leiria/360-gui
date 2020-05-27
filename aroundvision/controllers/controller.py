@@ -47,7 +47,68 @@ class Controller(object):
             # Is the content has the expected size?
             if size_content == self.model.frame_len.value:
                 logger.info("The frame has the expected size, let's insert it in the images queue!")
-                self.model.image_queue.put(self.get_rgb_from_yuv(content))
+                self.model.image_queue.put(self.get_rgb_from_yuv(content, self.model.shape.value))
+
+    def _get_url_for_roi(self, specific_endpoint):
+        """Get the url for region of interest: here we are getting the x,y,width,height
+        and assigning those values to the url..
+
+        :param specific_endpoint: for example get_viewport or get_viewport_info
+        :type specific_endpoint: str
+        """
+        # get size of the resized image
+        img_size = self.model.main_displayer_size.value
+
+        # get x, y, width, height: as we have the main image resized we have to get the
+        # coordinates taking into account the original values (model.width and model.height)
+        # just using the rule of three..
+        width = int((self.model.roi_geometry.width() * self.model.width.value) / img_size.width())
+        height = int((self.model.roi_geometry.height() * self.model.height.value) / img_size.height())
+        x = int((self.model.roi_geometry.center().x() * self.model.width.value) / img_size.width())
+        y = int((self.model.roi_geometry.center().y() * self.model.height.value) / img_size.height())
+
+        # build the url ..
+        return self.model.api_endpoint.value + specific_endpoint + "?coord=pixel&" + \
+               "x=" + str(x) + "&y=" + str(y) + "&width=" + str(width) + "&height=" + str(height)
+
+    def get_viewport_roi(self):
+        """Get viewport region of interest."""
+        # get url for get viewport raw
+        url = self._get_url_for_roi(CONF.api_get_viewport_raw)
+
+        while self.model.capturing_roi.value:
+            logger.info("Get viewport region of interest from API : " + self.model.api_endpoint.value)
+
+            # Get viewport
+            r = urllib.request.urlopen(url)
+
+            content = r.read()
+            size_content = len(content)
+            logger.info("Request Status: {}!".format(str(r.status)))
+
+            # Is the content has the expected size?
+            if size_content == self.model.roi_frame_len.value:
+                logger.info("The frame has the expected size, let's insert it in the images queue!")
+                self.model.roi_image_queue.put(self.get_rgb_from_yuv(content, self.model.roi_shape.value))
+
+    def get_viewport_roi_info(self):
+        """Get viewport regiont of interest info"""
+        url = self._get_url_for_roi(CONF.api_get_viewport_info)
+        logger.info("Getting viewport info in API {0}".format(url))
+
+        # get viewport roi info
+        r = self.api_client.create_request("get", url)
+
+        if r["status_code"] == 200:
+            # build frame info
+            frame_info = literal_eval(r["content"].decode())
+            self.model.roi_width.value = frame_info["width"]
+            self.model.roi_height.value = frame_info["height"]
+            self.model.roi_shape.value = (int(self.model.roi_height.value * 1.5), self.model.roi_width.value)
+            self.model.roi_frame_len.value = int(self.model.roi_width.value * self.model.roi_height.value * 3 / 2)
+            self.model.roi_bytes_per_line.value = 3 * self.model.roi_width.value
+
+            logger.info("Get viewport info status {0}!".format(r["status_code"]))
 
     def select_stream(self):
         """Select Stream index in API"""
@@ -110,15 +171,18 @@ class Controller(object):
             return_msg = r["errors"] + r["content"].decode() if r["content"] != "" else r["errors"]
             return return_msg
 
-    def get_rgb_from_yuv(self, raw):
+    @staticmethod
+    def get_rgb_from_yuv(raw, shape):
         """Convert YUV420 to RGB array!
 
         :param raw: bytearray received by API
         :type raw: bytearray
+        :param shape: shape (width, height)
+        :type shape: tuple
         :return: cv2 array converted from yuv420 to bgr
         :rtype: bgr array
         """
-        yuv = np.frombuffer(raw, dtype=np.uint8).reshape(self.model.shape.value)
+        yuv = np.frombuffer(raw, dtype=np.uint8).reshape(shape)
         return cv2.cvtColor(yuv, cv2.COLOR_YUV420P2BGR)  # YV12)
 
 

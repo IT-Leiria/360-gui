@@ -1,6 +1,4 @@
 
-import os
-
 from PyQt5 import uic
 from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtWidgets import QWidget
@@ -18,10 +16,8 @@ class RoiSettings(QWidget):
 
         # variables
         self.model = model
-        self.current_dir = os.path.dirname(__file__)
-        self.roi_settings_filename = os.path.join(self.current_dir, CONF.roi_settings_filename)
 
-        uic.loadUi(self.roi_settings_filename, self)
+        uic.loadUi(CONF.roi_settings_filename, self)
         self.setWindowFlags(Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint)
         self.fill_ui()
 
@@ -35,12 +31,12 @@ class RoiSettings(QWidget):
         bitrate and quality.
         """
         # bitrate
-        self.bitrate_lineEdit.setText(self.model.selected_roi_bitrate)
+        self.bitrate_lineEdit.setText(self.model.selected_roi_bitrate.value)
         self.bitrate_units_label.setText(CONF.roi_bitrate_units)
 
         # quality
         self.quality_comboBox.addItems(CONF.roi_qualities)
-        self.quality_comboBox.setCurrentIndex(self.quality_comboBox.findText(self.model.selected_roi_quality))
+        self.quality_comboBox.setCurrentIndex(self.quality_comboBox.findText(self.model.selected_roi_quality.value))
 
     @pyqtSlot(str)
     def change_roi_quality(self, quality):

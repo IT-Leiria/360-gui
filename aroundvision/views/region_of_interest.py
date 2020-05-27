@@ -1,9 +1,7 @@
 
-import os
-
 from PyQt5 import uic
-from PyQt5.QtCore import pyqtSlot, QEvent, Qt, QSize
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtCore import pyqtSlot, Qt, QSize
+from PyQt5.QtGui import QIcon, QPixmap, QResizeEvent
 from PyQt5.QtWidgets import QWidget, QToolButton
 
 from aroundvision.config.config_manager import CONF
@@ -12,24 +10,25 @@ from aroundvision.views.roi_settings import RoiSettings
 
 
 class RegionOfInterest(QWidget):
-    """
-    RegionOfInterest:
+    """RegionOfInterest: is the video player for region of interest.
+
+    :param model: application model
+    :type model: Model
     """
     def __init__(self, model):
+        """Constructor for region of interest."""
         super().__init__()
 
         # variables
         self.model = model
-        self.current_dir = os.path.dirname(__file__)
-        self.roi_filename = os.path.join(self.current_dir, CONF.roi_filename)
         self.settings_toolButton = QToolButton()
-        self.configure_tools()
+        self.configuration_tools()
         self.roi_settings_window = None
 
         # Create image widget to display roi images
         self.roi_displayer = ImageWidget(self, None, self.settings_toolButton)
         self.installEventFilter(self)
-        uic.loadUi(self.roi_filename, self)
+        uic.loadUi(CONF.roi_filename, self)
 
         # Connects
         self.settings_toolButton.clicked.connect(self.open_roi_settings)
@@ -37,7 +36,7 @@ class RegionOfInterest(QWidget):
         # Add displayer to layout
         self.roi_verticalLayout.addWidget(self.roi_displayer)
 
-    def configure_tools(self):
+    def configuration_tools(self):
         """Configure settings button."""
         icon = QIcon()
         icon.addPixmap(QPixmap(CONF.settings_icon), QIcon.Normal, QIcon.Off)
@@ -49,22 +48,15 @@ class RegionOfInterest(QWidget):
         self.settings_toolButton.setStyleSheet("background-color: rgba(122, 122, 122, 0);"
                                                "border: 0px;")
 
-    def eventFilter(self, obj, event):
-        """evetFilter: used to resize image when window changes.
-        TODO: improve this behaviour in further devs
+    def resizeEvent(self, event: QResizeEvent) -> None:
+        """resizeEvent: used to resize image when window changes.
         """
-        # resize event?
-        if event.type() == QEvent.Resize:
-            # yes, is the image is ok?
-            if self.model.roi_image is not None:
-                # yes, let's resize
-                # TODO: check -at the moment we resize without "KeepAspectRatio", if we want it please use
-                #  self.image.scaled(self.main_displayer.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
-                self.model.roi_image = self.model.roi_image.scaled(self.roi_displayer.size(),
-                                                                   Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
-                self.roi_displayer.set_image(self.model.roi_image)
-
-        return super().eventFilter(obj, event)
+        # yes, is the image is ok?
+        if self.model.roi_image is not None:
+            # yes, let's resize, at the moment we resize without "KeepAspectRatio"
+            self.model.roi_image = self.model.roi_image.scaled(self.roi_displayer.size(),
+                                                               Qt.IgnoreAspectRatio)
+            self.roi_displayer.set_image(self.model.roi_image)
 
     def closeEvent(self, event) -> None:
         self.model.clean_roi_model()

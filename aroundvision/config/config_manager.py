@@ -41,6 +41,8 @@ class ConfigurationManager:
         self.api_select_stream_path = self.api_config.get("api_select_stream_path")
         self.api_get_frame_info = self.api_config.get("api_get_frame_info")
         self.api_get_frame_raw_path = self.api_config.get("api_get_frame_raw_path")
+        self.api_get_viewport_info = self.api_config.get("api_get_viewport_info")
+        self.api_get_viewport_raw = self.api_config.get("api_get_viewport_raw")
         self.api_selected_stream_idx = self.api_config.get("api_selected_stream_idx")
 
         # Log variables

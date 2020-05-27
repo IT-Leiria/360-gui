@@ -112,9 +112,11 @@ class MainWindow(QMainWindow):
 
     def resizeEvent(self, event: QResizeEvent) -> None:
         """resizeEvent: emit signal (resize_img) to video_player
-         resize the image when window resized."""
+         resize the image when window resized. And save the main
+         displayer in model"""
         # let's emit a signal to video_player resize the image
         self.resize_img.emit()
+        self.model.main_displayer_size.value = self.video_player.main_displayer.size()
 
     @staticmethod
     def load_stylesheet(stylesheet_filename: str) -> str:

@@ -10,7 +10,7 @@ from aroundvision.views.loading_screen import LoadingScreen
 class ImageWidget(QWidget):
     """ImageWidget: display images using setImage and paintEvent.
     The configure_tools are used to set play/pause buttons.
-    The methods related with mouse are prepared to ROI task.
+    The methods related with mouse are used to Region of Interest..
 
     :param parent: who calls this
     :type parent: VideoPlayer
@@ -74,27 +74,26 @@ class ImageWidget(QWidget):
             qp.drawImage(QPoint(0, 0), self.image)
         qp.end()
 
-    # TODO: the following methods used to draw the region of interest
-    #       in that task start from here..
     def mousePressEvent(self, event) -> None:
+        """mousePressEvent used start draw a polygon with the left button (mouse)."""
         if event.button() == Qt.LeftButton:
             self.origin = QPoint(event.pos())
             self.rubber_band.setGeometry(QRect(self.origin, QSize()))
             self.rubber_band.show()
 
     def mouseMoveEvent(self, event) -> None:
+        """mouseMoveEvent: here we already have a starting point of the polygon and we will draw the polygon."""
         if not self.origin.isNull():
             self.rubber_band.setGeometry(QRect(self.origin, event.pos()).normalized())
 
     def mouseReleaseEvent(self, event) -> None:
+        """mouseReleaseEvent: to finalize the polygon.."""
         if event.button() == Qt.LeftButton:
-            # TODO: this must be improved, this is just an example..
+            # Do we have model and image?
             if self.model and self.image:
-                img_crop = self.image.copy(self.rubber_band.geometry())
-                self.model.roi_image = img_crop
+                # yes, let's get region of interest geometry and activate region of interest..
                 self.model.roi_geometry = self.rubber_band.geometry()  # x, y, w, h
                 self.model.roi_activated.value = True
-                # cv2.imshow("ROI", self.convert_qimage_to_mat(img_crop))
 
         return super(ImageWidget, self).mouseReleaseEvent(event)
 
