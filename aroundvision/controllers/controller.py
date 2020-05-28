@@ -220,7 +220,7 @@ class AroundvisionClient:
 
         try:
             if request_type in self.dict_request:
-                r = self.dict_request[request_type](url, stream=True)
+                r = self.dict_request[request_type](url, stream=True, timeout=5)
                 response["content"] = r.content
                 response['status_code'] = r.status_code
 
