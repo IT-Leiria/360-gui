@@ -65,7 +65,8 @@ class Controller(object):
         width = int((self.model.roi_geometry.width() * self.model.width.value) / img_size.width())
         height = int((self.model.roi_geometry.height() * self.model.height.value) / img_size.height())
         x = int((self.model.roi_geometry.center().x() * self.model.width.value) / img_size.width())
-        y = int((self.model.roi_geometry.center().y() * self.model.height.value) / img_size.height())
+        tmp_y = int((self.model.roi_geometry.center().y() * self.model.height.value) / img_size.height())
+        y = self.model.height.value - tmp_y  # invert y
 
         # build the url ..
         return self.model.api_endpoint.value + specific_endpoint + "?coord=pixel&" + \
