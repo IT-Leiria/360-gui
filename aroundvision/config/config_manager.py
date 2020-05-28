@@ -9,11 +9,11 @@ from pathlib import Path
 class ConfigurationManager:
     """Configuration Manager: reading configuration values from config.yaml."""
 
-    def __init__(self):
+    def __init__(self, config_file=None):
         """Constructor for configuration manager."""
         self.base_config_path = os.path.dirname(os.path.realpath(inspect.getfile(self.__class__)))
         self.parent_path = os.path.abspath(os.path.join(self.base_config_path, os.pardir))
-        self.configuration_file = os.path.join(self.base_config_path, "config.yaml")
+        self.configuration_file = config_file if config_file else os.path.join(self.base_config_path, "config.yaml")
         self.current_date = datetime.today().strftime('%Y-%m-%d')
         self.config = self.load_config_file()
 
