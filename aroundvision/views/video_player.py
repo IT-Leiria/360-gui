@@ -42,6 +42,7 @@ class VideoPlayer(QWidget):
         self.image = None
         self.roi_window = None
         self.capture_thread = None  # Thread to call get frames in controller
+        self.capture_thread_roi = None  # Thread to call get roi viewport in controller
 
         self._create_timer_thread()
         self._set_connects()
@@ -94,7 +95,7 @@ class VideoPlayer(QWidget):
             logger.info("Display frames.")
 
             # Start capturing frames
-            self.model.capturing.value = True
+            self.model.main_capturing.value = True
             self.capture_thread = threading.Thread(name="capturing", target=self.controller.get_frame_from_api)
             self.capture_thread.start()
 
@@ -110,7 +111,7 @@ class VideoPlayer(QWidget):
         else:
             # no, pause the display..
             logger.info("Pause display 360.")
-            self.model.capturing.value = False
+            self.model.main_capturing.value = False
             self.stop_timer.emit()
 
     @pyqtSlot()
@@ -119,8 +120,8 @@ class VideoPlayer(QWidget):
         try:
             # get image from queue
             img = self.model.image_queue.get(False)
-            self.image = QImage(img.data, self.model.width.value, self.model.height.value,
-                                self.model.bytes_per_line.value, QImage.Format_RGB888)
+            self.image = QImage(img.data, self.model.main_width.value, self.model.main_height.value,
+                                self.model.main_bytes_per_line.value, QImage.Format_RGB888)
 
             # scale the image to main_displayer size without "KeepAspectRatio"
             self.image = self.image.scaled(self.main_displayer.size(), Qt.IgnoreAspectRatio)
@@ -157,21 +158,12 @@ class VideoPlayer(QWidget):
             # Get viewport info
             self.controller.get_viewport_roi_info()
 
-            # create
+            # create thread roi to capture viewport from api
             self.model.capturing_roi.value = True
             self.capture_thread_roi = threading.Thread(name="capturing_roi", target=self.controller.get_viewport_roi)
             self.capture_thread_roi.start()
 
-            #TODO: check Do we already have images in the queue?
-            #if self.model.image_queue.empty():
-            # No, let's Loading frames ... when timeout is reached, the main displayer
-            # will emit the signal (start_timer), then the Start timer will start showing
-            # a image from queue every x seconds
-            #    self.main_displayer.set_loading_screen()
-            #else:
-            # yes, we just pause the video let's start again..
-            #self.start_timer.emit()
-
+            # create region of intereste..
             self.roi_window = RegionOfInterest(self.model)
             self.roi_window.show()
             self.show_roi_frame()

@@ -14,6 +14,7 @@ class Model(object):
         self.selected_cube_face = FieldValue("")
         self.api_endpoint = FieldValue(CONF.api_endpoint)
         self.frame_rate = FieldValue(CONF.frame_rate)
+
         # region of interest vars
         self.roi_activated = FieldValue(False)
         self.roi_image = None
@@ -31,7 +32,7 @@ class Model(object):
 
         # main display: queue and capturing..
         self.image_queue = queue.Queue()
-        self.capturing = FieldValue(False)
+        self.main_capturing = FieldValue(False)
         self.main_displayer_size = FieldValue(None)
 
         # Streams
@@ -40,11 +41,11 @@ class Model(object):
         self.stream_index = FieldValue(CONF.api_selected_stream_idx)
 
         # Main Frame variables
-        self.width = FieldValue(None)
-        self.height = FieldValue(None)
-        self.shape = FieldValue(None)
-        self.frame_len = FieldValue(None)
-        self.bytes_per_line = FieldValue(None)
+        self.main_width = FieldValue(None)
+        self.main_height = FieldValue(None)
+        self.main_shape = FieldValue(None)
+        self.main_frame_len = FieldValue(None)
+        self.main_bytes_per_line = FieldValue(None)
 
     def clean_roi_model(self):
         self.roi_activated.value = False

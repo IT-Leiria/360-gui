@@ -34,7 +34,7 @@ class Controller(object):
         """While we are capturing values (model.capturing = True) we will
         get frames from API and store them in model.image.queue.
         Here we are using urllib because has a better performance than requests."""
-        while self.model.capturing.value:
+        while self.model.main_capturing.value:
             logger.info("Get frame from API : " + self.model.api_endpoint.value)
 
             # Get frame
@@ -45,9 +45,9 @@ class Controller(object):
             logger.info("Request Status: {}!".format(str(r.status)))
 
             # Is the content has the expected size?
-            if size_content == self.model.frame_len.value:
+            if size_content == self.model.main_frame_len.value:
                 logger.info("The frame has the expected size, let's insert it in the images queue!")
-                self.model.image_queue.put(self.get_rgb_from_yuv(content, self.model.shape.value))
+                self.model.image_queue.put(self.get_rgb_from_yuv(content, self.model.main_shape.value))
 
     def _get_url_for_roi(self, specific_endpoint):
         """Get the url for region of interest: here we are getting the x,y,width,height
@@ -62,11 +62,11 @@ class Controller(object):
         # get x, y, width, height: as we have the main image resized we have to get the
         # coordinates taking into account the original values (model.width and model.height)
         # just using the rule of three..
-        width = int((self.model.roi_geometry.width() * self.model.width.value) / img_size.width())
-        height = int((self.model.roi_geometry.height() * self.model.height.value) / img_size.height())
-        x = int((self.model.roi_geometry.center().x() * self.model.width.value) / img_size.width())
-        tmp_y = int((self.model.roi_geometry.center().y() * self.model.height.value) / img_size.height())
-        y = self.model.height.value - tmp_y  # invert y
+        width = int((self.model.roi_geometry.width() * self.model.main_width.value) / img_size.width())
+        height = int((self.model.roi_geometry.height() * self.model.main_height.value) / img_size.height())
+        x = int((self.model.roi_geometry.center().x() * self.model.main_width.value) / img_size.width())
+        tmp_y = int((self.model.roi_geometry.center().y() * self.model.main_height.value) / img_size.height())
+        y = self.model.main_height.value - tmp_y  # invert y
 
         # build the url ..
         return self.model.api_endpoint.value + specific_endpoint + "?coord=pixel&" + \
@@ -89,7 +89,7 @@ class Controller(object):
 
             # Is the content has the expected size?
             if size_content == self.model.roi_frame_len.value:
-                logger.info("The frame has the expected size, let's insert it in the images queue!")
+                logger.info("The roi frame has the expected size, let's insert it in the images queue!")
                 self.model.roi_image_queue.put(self.get_rgb_from_yuv(content, self.model.roi_shape.value))
 
     def get_viewport_roi_info(self):
@@ -126,7 +126,7 @@ class Controller(object):
         """Get frame info from selected stream on API. Here we are storing
         the following values in our model: frame width, height, shape, len and bytes per line."""
         get_frame_info_path = self.model.api_endpoint.value + CONF.api_get_frame_info + \
-                              "?projection=" + self.model.selected_projection_api.value
+            "?projection=" + self.model.selected_projection_api.value
         logger.info("Getting frame info in API {0}".format(get_frame_info_path))
 
         r = self.api_client.create_request("get", get_frame_info_path)
@@ -134,11 +134,11 @@ class Controller(object):
         if r["status_code"] == 200:
             # build frame info
             frame_info = literal_eval(r["content"].decode())
-            self.model.width.value = frame_info["width"]
-            self.model.height.value = frame_info["height"]
-            self.model.shape.value = (int(self.model.height.value * 1.5), self.model.width.value)
-            self.model.frame_len.value = int(self.model.width.value * self.model.height.value * 3 / 2)
-            self.model.bytes_per_line.value = 3 * self.model.width.value
+            self.model.main_width.value = frame_info["width"]
+            self.model.main_height.value = frame_info["height"]
+            self.model.main_shape.value = (int(self.model.main_height.value * 1.5), self.model.main_width.value)
+            self.model.main_frame_len.value = int(self.model.main_width.value * self.model.main_height.value * 3 / 2)
+            self.model.main_bytes_per_line.value = 3 * self.model.main_width.value
 
             logger.info("Get frame info status {0}!".format(r["status_code"]))
 

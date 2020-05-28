@@ -8,10 +8,13 @@ from aroundvision.views.popup import PopUp
 
 
 class RoiSettings(QWidget):
-    """
-    RoiSettings: settings panel with bitrate and quality.
+    """RoiSettings: settings panel with bitrate and quality.
+
+    :param model: Model
+    :type model: Model
     """
     def __init__(self, model):
+        """Constructor for region of interest settings."""
         super().__init__()
 
         # variables
@@ -46,6 +49,8 @@ class RoiSettings(QWidget):
 
     @pyqtSlot()
     def save_values_slot(self):
+        """Save button clicked we will save those values in model..
+        The roi_quality was already saved by combobox slot.."""
         roi_bitrate_current_text = self.bitrate_lineEdit.text()
         if roi_bitrate_current_text != "":
             self.model.selected_roi_bitrate = roi_bitrate_current_text
