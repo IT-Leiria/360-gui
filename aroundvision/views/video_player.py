@@ -154,6 +154,12 @@ class VideoPlayer(QWidget):
         """Display Region of interest: create roi window and set image from saved in model.."""
         # Do we already have a ROI window?
         if not self.roi_window and roi_activated:
+            # clearing queue using thread safe, we are clearing queue because
+            # we can have a new region of interest, than we need to save and
+            # display images with new area..
+            with self.model.roi_image_queue.mutex:
+                self.model.roi_image_queue.queue.clear()
+
             # no, let's create one..
             # Get viewport info
             self.controller.get_viewport_roi_info()
