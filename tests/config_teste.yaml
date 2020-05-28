@@ -1,0 +1,70 @@
+%YAML 1.1
+---
+log_configs:
+  log_filename: "/tmp/aroundvision/AROUNDVISION-"
+  log_level: "DEBUG"
+  log_format: "[%(asctime)s - %(filename)s:%(lineno)s -  %(funcName)s() - %(levelname)s ] %(message)s"
+  log_extension: ".log"
+ui_configs:
+  stylesheet: "aroundvision.css"
+  ui_mainwindow: "mainwindow.ui"
+  ui_loadsource: "load_source.ui"
+  ui_popup: "popup.ui"
+  roi_window: "region_of_interest.ui"
+  roi_settings: "roi_settings.ui"
+  about_window: "about.ui"
+api_configs:
+  api_endpoint: "http://0.0.0.0:5000/"
+  api_stream_list_path: "get_stream_list"
+  api_select_stream_path: "select_stream"
+  api_get_frame_info: "get_frame_info"
+  api_get_frame_raw_path: "get_frame_raw"
+  api_get_viewport_info: "get_viewport_info"
+  api_get_viewport_raw: "get_viewport_raw"
+  api_selected_stream_idx: "0"
+frame_rate: 30 # fps
+projections:
+  - proj_name: "Equi-rectangular"
+    proj_id: 0
+    proj_api_name: "ERP"
+  - proj_name: "Cube-Map"
+    proj_id: 1
+    proj_api_name: "CMP"
+  - proj_name: "Compact OHP"
+    proj_id: 2
+    proj_api_name: "COHP"
+  - proj_name: "Rectilinear"
+    proj_id: 3
+    proj_api_name: "RECT"
+  - proj_name: "Compact ISP"
+    proj_id: 4
+    proj_api_name: "CISP"
+qualities:
+  - "1"
+  - "2"
+  - "3"
+  - "4"
+faces_cube:
+  - "1"
+  - "2"
+  - "3"
+  - "4"
+  - "5"
+  - "6"
+roi_bitrate_value: "22"
+roi_bitrate_units: "Mbits/s"
+roi_quality: "4"
+roi_qualities:
+  - "1"
+  - "2"
+  - "3"
+  - "4"
+icons:
+  play_icon: "play-circle-solid_ok.png"
+  pause_icon: "pause-circle-solid_ok.png"
+  settings_icon: "settings-solid_ok.png"
+  about_logo: "csw_logo.png"
+  loading_gif: "loading.gif"
+doc_url: "docs/build/html/index.html"
+loading_time_seconds: 3000
+...
