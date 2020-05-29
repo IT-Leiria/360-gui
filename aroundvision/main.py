@@ -34,7 +34,7 @@ def run_app():
     window = MainWindow(model, Controller(model))
     window.show()
     window.raise_()
-    app.exit(app.exec_())
+    sys.exit(app.exec_())
 
 
 def main():
