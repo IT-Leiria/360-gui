@@ -27,7 +27,7 @@ class ConfigurationManager:
         self.faces_cube = self.config.get("faces_cube")
         self.frame_rate = self.config.get("frame_rate")
         self.docs_url = os.path.join(self.parent_path, self.config.get("doc_url"))
-        self.loading_gif_time = self.config.get("loading_time_seconds")
+        self.loading_gif_time = self.config.get("loading_time_mseconds")
 
         # roi settings
         self.roi_bitrate = self.config.get("roi_bitrate_value")
@@ -70,7 +70,6 @@ class ConfigurationManager:
         self.play_icon = self.parent_path + "/images/" + self.icons.get("play_icon")
         self.pause_icon = self.parent_path + "/images/" + self.icons.get("pause_icon")
         self.settings_icon = self.parent_path + "/images/" + self.icons.get("settings_icon")
-        self.about_logo = self.parent_path + "/images/" + self.icons.get("about_logo")
         self.loading_gif = self.parent_path + "/images/" + self.icons.get("loading_gif")
 
     def load_config_file(self):

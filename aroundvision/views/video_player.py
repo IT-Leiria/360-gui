@@ -143,10 +143,13 @@ class VideoPlayer(QWidget):
             self.model.roi_image = QImage(img.data, self.model.roi_width.value, self.model.roi_height.value,
                                           self.model.roi_bytes_per_line.value, QImage.Format_RGB888)
 
-            # scale the image to main_displayer size without "KeepAspectRatio"
+            # scale the image to main_displayer size with "KeepAspectRatio"
             self.model.roi_image = self.model.roi_image.scaled(self.roi_window.roi_displayer.size(),
-                                                               Qt.IgnoreAspectRatio)
+                                                               Qt.KeepAspectRatio, Qt.SmoothTransformation)
             self.roi_window.roi_displayer.set_image(self.model.roi_image)
+            # resize roi window accordingly with roi_image size
+            self.roi_window.resize(self.model.roi_image.size())
+
         except Exception as e:
             logger.warning("ROI Queue empty: " + str(e))
 

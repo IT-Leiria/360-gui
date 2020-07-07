@@ -34,7 +34,7 @@ class RegionOfInterest(QWidget):
         self.settings_toolButton.clicked.connect(self.open_roi_settings)
 
         # Add displayer to layout
-        self.roi_verticalLayout.addWidget(self.roi_displayer)
+        self.verticalLayout.addWidget(self.roi_displayer)
 
     def configuration_tools(self):
         """Configure settings button."""
@@ -54,8 +54,11 @@ class RegionOfInterest(QWidget):
         # yes, is the image is ok?
         if self.model.roi_image is not None:
             # yes, let's resize, at the moment we resize without "KeepAspectRatio"
-            self.model.roi_image = self.model.roi_image.scaled(self.roi_displayer.size(),
-                                                               Qt.IgnoreAspectRatio)
+            self.model.roi_image = self.model.roi_image.scaled(
+                self.roi_displayer.size(),
+                Qt.KeepAspectRatio,
+                Qt.SmoothTransformation
+            )
             self.roi_displayer.set_image(self.model.roi_image)
 
     def closeEvent(self, event) -> None:
