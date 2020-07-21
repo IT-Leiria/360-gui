@@ -20,12 +20,12 @@ In base folder you just run the following command:
 
 ```tox```
 
+This will perform some analysis and export a report.
+All the tests are executed against some py versions defined
+in tox.ini.
+
 #### Test projections using jupyter notebook
 
 ```cd tests/notebooks```
 
 ```jupyter notebook```
-
-This will perform some analysis and export a report.
-All the tests are executed against some py versions defined
-in tox.ini.
