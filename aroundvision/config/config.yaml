@@ -22,28 +22,13 @@ api_configs:
   api_get_viewport_info: "get_viewport_info"
   api_get_viewport_raw: "get_viewport_raw"
   api_selected_stream_idx: "0"
+  api_get_layer_info: "get_layer_info"
+  api_get_projection_list: "get_projection_list"
+  api_get_face_raw_path: "get_projection_face_raw"
 frame_rate: 30 # fps
-projections:
-  - proj_name: "Equi-rectangular"
-    proj_id: 0
-    proj_api_name: "ERP"
-  - proj_name: "Cube-Map"
-    proj_id: 1
-    proj_api_name: "CMP"
-  - proj_name: "Compact OHP"
-    proj_id: 2
-    proj_api_name: "COHP"
-  - proj_name: "Rectilinear"
-    proj_id: 3
-    proj_api_name: "RECT"
-  - proj_name: "Compact ISP"
-    proj_id: 4
-    proj_api_name: "CISP"
-qualities:
-  - "1"
-  - "2"
-  - "3"
-  - "4"
+cube_projection:
+  name: "Cube-map projection"
+  api_name: "CMP"
 faces_cube:
   - "1"
   - "2"
@@ -53,12 +38,6 @@ faces_cube:
   - "6"
 roi_bitrate_value: "22"
 roi_bitrate_units: "Mbits/s"
-roi_quality: "4"
-roi_qualities:
-  - "1"
-  - "2"
-  - "3"
-  - "4"
 icons:
   play_icon: "play-circle-solid_ok.png"
   pause_icon: "pause-circle-solid_ok.png"

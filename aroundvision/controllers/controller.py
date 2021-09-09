@@ -2,6 +2,7 @@
 import logging
 from ast import literal_eval
 import urllib
+from socket import timeout
 
 from aroundvision.config.config_manager import CONF
 
@@ -28,18 +29,28 @@ class Controller(object):
 
         # Request initial data from configuration
         self.get_stream_list()
-        self.select_stream()
+
+        self.get_projection_list()
 
     def get_frame_from_api(self):
         """While we are capturing values (model.capturing = True) we will
         get frames from API and store them in model.image.queue.
-        Here we are using urllib because has a better performance than requests."""
+        Here we are using urllib because it has a better performance than requests."""
         while self.model.main_capturing.value:
             logger.info("Get frame from API : " + self.model.api_endpoint.value)
 
+            path = CONF.api_get_frame_raw_path if self.model.selected_projection_api.value != CONF.cube_proj_name["api_name"] else CONF.api_get_face_raw_path
+            # Build request
+            request = self.model.api_endpoint.value + path + "?projection=" + \
+                                       self.model.selected_projection_api.value
+            if self.model.selected_quality.value != -1:
+                request = request + "&layer=" + str(self.model.selected_quality.value)
+
+            if self.model.selected_projection_api.value == CONF.cube_proj_name["api_name"]:
+                request = request + "&face=" + str(self.model.selected_cube_face.value)
+
             # Get frame
-            r = urllib.request.urlopen(self.model.api_endpoint.value + CONF.api_get_frame_raw_path + "?projection=" +
-                                       self.model.selected_projection_api.value)
+            r = urllib.request.urlopen(request)
             content = r.read()
             size_content = len(content)
             logger.info("Request Status: {}!".format(str(r.status)))
@@ -48,6 +59,24 @@ class Controller(object):
             if size_content == self.model.main_frame_len.value:
                 logger.info("The frame has the expected size, let's insert it in the images queue!")
                 self.model.image_queue.put(self.get_rgb_from_yuv(content, self.model.main_shape.value))
+
+    def get_projection_list(self):
+        """Get Projections List from API
+        """
+        request = self.model.api_endpoint.value + CONF.api_get_projection_list_path
+        r = self.api_client.create_request("get", request)
+
+        if r["status_code"] == 200:
+
+            projections = literal_eval(r["content"].decode())
+
+            projection_list = []
+            for p in projections:
+                projection_list.append({'proj_api_name' : p[0], 'proj_name' : p[1]})
+
+            self.model.projections_list.value = projection_list
+
+            logger.info("Get projections list status {0}!".format(r["status_code"]))
 
     def _get_url_for_roi(self, specific_endpoint):
         """Get the url for region of interest: here we are getting the x,y,width,height
@@ -66,11 +95,16 @@ class Controller(object):
         height = int((self.model.roi_geometry.height() * self.model.main_height.value) / img_size.height())
         x = int((self.model.roi_geometry.center().x() * self.model.main_width.value) / img_size.width())
         y = int((self.model.roi_geometry.center().y() * self.model.main_height.value) / img_size.height())
+        layer = self.model.selected_roi_quality.value
 
         # build the url ..
-        return self.model.api_endpoint.value + specific_endpoint + "?coord=pixel&" + \
+        url = self.model.api_endpoint.value + specific_endpoint + "?coord=pixel&" + \
                "x=" + str(x) + "&y=" + str(y) + "&width=" + str(width) + "&height=" + str(height)
 
+        if layer != -1:
+            url = url + "&layer=" + str(layer)
+
+        return url
     def get_viewport_roi(self):
         """Get viewport region of interest."""
         # get url for get viewport raw
@@ -80,7 +114,11 @@ class Controller(object):
             logger.info("Get viewport region of interest from API : " + self.model.api_endpoint.value)
 
             # Get viewport
-            r = urllib.request.urlopen(url)
+            try:
+                r = urllib.request.urlopen(url, timeout=2)
+            except timeout as e:
+                logger.info("ROI frame request timeout. Stopping capture.")
+                self.model.capturing_roi.value = False
 
             content = r.read()
             size_content = len(content)
@@ -107,6 +145,7 @@ class Controller(object):
             self.model.roi_shape.value = (int(self.model.roi_height.value * 1.5), self.model.roi_width.value)
             self.model.roi_frame_len.value = int(self.model.roi_width.value * self.model.roi_height.value * 3 / 2)
             self.model.roi_bytes_per_line.value = 3 * self.model.roi_width.value
+            self.model.roi_bitrate.value = round(frame_info["bitrate"], 2)  # round roi bitrate to 2 decimal points
 
             logger.info("Get viewport info status {0}!".format(r["status_code"]))
 
@@ -118,6 +157,7 @@ class Controller(object):
 
         r = self.api_client.create_request("get", select_stream_path)
         self.get_frame_info()
+        self.get_stream_qualities()
 
         logger.info("Select stream status {0}!".format(r["status_code"]))
 
@@ -133,13 +173,31 @@ class Controller(object):
         if r["status_code"] == 200:
             # build frame info
             frame_info = literal_eval(r["content"].decode())
+
             self.model.main_width.value = frame_info["width"]
             self.model.main_height.value = frame_info["height"]
             self.model.main_shape.value = (int(self.model.main_height.value * 1.5), self.model.main_width.value)
             self.model.main_frame_len.value = int(self.model.main_width.value * self.model.main_height.value * 3 / 2)
             self.model.main_bytes_per_line.value = 3 * self.model.main_width.value
-
+            self.model.main_bitrate.value = frame_info["bitrate"]
             logger.info("Get frame info status {0}!".format(r["status_code"]))
+
+    def get_projection_face_info(self):
+        get_frame_info_path = self.model.api_endpoint.value + "get_projection_face_info" + \
+            "?projection=" + self.model.selected_projection_api.value + "&face=" + self.model.selected_cube_face.value + "&layer=" + str(self.model.selected_quality.value)
+        logger.info("Getting frame info in API {0}".format(get_frame_info_path))
+
+        r = self.api_client.create_request("get", get_frame_info_path)
+        if r["status_code"] == 200:
+            # build frame info
+            frame_info = literal_eval(r["content"].decode())
+
+            self.model.main_width.value = frame_info["width"]
+            self.model.main_height.value = frame_info["height"]
+            self.model.main_shape.value = (int(self.model.main_height.value * 1.5), self.model.main_width.value)
+            self.model.main_frame_len.value = int(self.model.main_width.value * self.model.main_height.value * 3 / 2)
+            self.model.main_bytes_per_line.value = 3 * self.model.main_width.value
+            self.model.main_bitrate.value = frame_info["bitrate"]
 
     def get_stream_list(self):
         """Get Stream List from API:
@@ -170,6 +228,31 @@ class Controller(object):
             self.model.stream_list.value.clear()
             return_msg = r["errors"] + r["content"].decode() if r["content"] != "" else r["errors"]
             return return_msg
+
+    def get_stream_qualities(self):
+        """Get Stream Qualities List from API to be displayed in the Quality combobox
+        """
+        layer_info_path = self.model.api_endpoint.value + CONF.api_get_layer_info + \
+            "?idx=" + self.model.stream_index.value
+        logger.info("Getting stream qualities in API {0}".format(layer_info_path))
+        # get stream list from API
+        r = self.api_client.create_request("get", layer_info_path)
+
+        self.model.stream_qualities.value = {}
+
+        # successful request?
+        if r['status_code'] == 200:
+            # yes, update the values in the model
+            qualities = []
+            for i, s in enumerate(literal_eval(r["content"].decode())):
+                # manipulate content which is formatted like: 
+                start = s[1].find("Quality: ") + 9
+                end = s[1].find(" |")
+                qualities.append(s[1][start:end])
+            self.model.stream_qualities.value = qualities
+        else:
+            self.model.selected_quality.value = -1
+        logger.info("Get stream qualities status {0}!".format(r["status_code"]))
 
     @staticmethod
     def get_rgb_from_yuv(raw, shape):

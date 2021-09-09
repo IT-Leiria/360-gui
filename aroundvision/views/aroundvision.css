@@ -75,3 +75,32 @@ QComboBox:disabled {
     color:#FFFFFF;
     background-color: #222222;
 }
+
+QPushButton,
+QPushButton:pressed {
+	color: #DEDEDE;
+	font-size: 12px;
+	font-weight:bold;
+	background-color: transparent;
+	border-style:outset;
+    border-radius: 10px;
+    border-width: 1px;
+    border-color: #6F6F6F;
+	min-height: 20px;
+	text-align: center;
+    padding: 5px;
+}
+
+QPushButton:checked {
+	background-color: rgb(122, 122, 122);
+}
+
+QPushButton:hover {
+    background-color: #7E7E7E;
+}
+
+QPushButton:disabled {
+    color:#7E7E7E;
+    background-color: #2F2F2F;
+    border-style: none;
+}

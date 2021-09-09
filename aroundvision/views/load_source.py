@@ -95,6 +95,9 @@ class LoadSource(QWidget):
         # update our stream list
         self.create_stream_list()
 
+        # update the projections list
+        self.controller.get_projection_list()
+
     @pyqtSlot()
     def save_sources_slot(self):
         """Slot for save button. Save inserted data in model and select_stream in API!"""

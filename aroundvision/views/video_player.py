@@ -127,31 +127,8 @@ class VideoPlayer(QWidget):
             self.image = self.image.scaled(self.main_displayer.size(), Qt.IgnoreAspectRatio)
             self.main_displayer.set_image(self.image)
 
-            # is the region of interest activated?
-            if self.model.roi_activated.value:
-                # yes, let's set roi image
-                self.show_roi_frame()
         except Exception as e:
             logger.info("Queue empty " + str(e))
-
-    def show_roi_frame(self):
-        """Show region of interest frame: get roi image from the roi_image_queue,
-        ->if exists, scale and set image in roi_displayer!"""
-        try:
-            # get roi image from queue
-            img = self.model.roi_image_queue.get(False)
-            self.model.roi_image = QImage(img.data, self.model.roi_width.value, self.model.roi_height.value,
-                                          self.model.roi_bytes_per_line.value, QImage.Format_RGB888)
-
-            # scale the image to main_displayer size with "KeepAspectRatio"
-            self.model.roi_image = self.model.roi_image.scaled(self.roi_window.roi_displayer.size(),
-                                                               Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            self.roi_window.roi_displayer.set_image(self.model.roi_image)
-            # resize roi window accordingly with roi_image size
-            self.roi_window.resize(self.model.roi_image.size())
-
-        except Exception as e:
-            logger.warning("ROI Queue empty: " + str(e))
 
     def display_roi(self, roi_activated):
         """Display Region of interest: create roi window and set image from saved in model.."""
@@ -164,18 +141,9 @@ class VideoPlayer(QWidget):
                 self.model.roi_image_queue.queue.clear()
 
             # no, let's create one..
-            # Get viewport info
-            self.controller.get_viewport_roi_info()
-
-            # create thread roi to capture viewport from api
-            self.model.capturing_roi.value = True
-            self.capture_thread_roi = threading.Thread(name="capturing_roi", target=self.controller.get_viewport_roi)
-            self.capture_thread_roi.start()
-
-            # create region of intereste..
-            self.roi_window = RegionOfInterest(self.model)
+            # create region of interest..
+            self.roi_window = RegionOfInterest(self.model, self.controller, self.main_displayer.play_toolButton.isChecked())
             self.roi_window.show()
-            self.show_roi_frame()
 
         # Is the roi window was deactivated?
         if not roi_activated:

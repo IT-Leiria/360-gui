@@ -16,31 +16,24 @@ class ImageWidget(QWidget):
     :type parent: VideoPlayer
     :param model: application model
     :type model: Model (MVC)
-    :param settings: displayer settings
-    :type settings: QWdidget
     """
-    def __init__(self, parent=None, model=None, settings=None):
+    def __init__(self, parent=None, model=None):
         """Constructor for ImageWidget."""
         super(ImageWidget, self).__init__(parent)
         self.parent = parent
         self.image = None
         self.model = model
-        self.settings = settings
         self.loading = None  # Loading Screen
         # select area
         self.rubber_band = QRubberBand(QRubberBand.Rectangle, self)
         self.origin = QPoint()
         self.setLayout(QVBoxLayout())
-
-        # is settings?
-        if self.settings:
-            self.layout().addWidget(self.settings, 0, Qt.AlignTop | Qt.AlignLeft)
+        self.model.roi_activated.register_callback(self.ended_roi)
 
         # play/pause
-        if self.model:
-            self.play_toolButton = QToolButton(self)
-            self.layout().addWidget(self.play_toolButton, 1, Qt.AlignBottom | Qt.AlignHCenter)
-            self.configure_tools()
+        self.play_toolButton = QToolButton(self)
+        self.layout().addWidget(self.play_toolButton, 1, Qt.AlignBottom | Qt.AlignHCenter)
+        self.configure_tools()
 
     def configure_tools(self):
         """Configure display tools: play and pause buttons."""
@@ -77,24 +70,25 @@ class ImageWidget(QWidget):
     def mousePressEvent(self, event) -> None:
         """mousePressEvent used start draw a polygon with the left button (mouse)."""
         if event.button() == Qt.LeftButton:
-            self.origin = QPoint(event.pos())
-            self.rubber_band.setGeometry(QRect(self.origin, QSize()))
-            self.rubber_band.show()
+            if self.model.roi_selection_activated.value:
+                self.origin = QPoint(event.pos())
+                self.rubber_band.setGeometry(QRect(self.origin, QSize()))
+                self.rubber_band.show()
 
     def mouseMoveEvent(self, event) -> None:
         """mouseMoveEvent: here we already have a starting point of the polygon and we will draw the polygon."""
-        if not self.origin.isNull():
+        if not self.origin.isNull() and self.model.roi_selection_activated.value:
             self.rubber_band.setGeometry(QRect(self.origin, event.pos()).normalized())
 
     def mouseReleaseEvent(self, event) -> None:
         """mouseReleaseEvent: to finalize the polygon.."""
         if event.button() == Qt.LeftButton:
             # Do we have model and image?
-            if self.model and self.image:
-                # yes, let's get region of interest geometry and activate region of interest..
-                self.model.roi_geometry = self.rubber_band.geometry()  # x, y, w, h
-                self.model.roi_activated.value = True
-
+            if self.model:
+                if self.image and self.model.roi_selection_activated.value:
+                    # yes, let's get region of interest geometry and activate region of interest..
+                    self.model.roi_geometry = self.rubber_band.geometry()  # x, y, w, h
+                    self.model.roi_activated.value = True
         return super(ImageWidget, self).mouseReleaseEvent(event)
 
     def resizeEvent(self, event: QResizeEvent) -> None:
@@ -110,6 +104,11 @@ class ImageWidget(QWidget):
         self.loading.show()
         # disable play button, the user cannot pause when we are loading..
         self.play_toolButton.setEnabled(False)
+
+    def ended_roi(self, activated: bool) -> None:
+        """ROI active value changed."""
+        if not activated:
+            self.rubber_band.hide()
 
     @pyqtSlot()
     def start_displaying(self) -> None:
