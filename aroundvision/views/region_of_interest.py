@@ -55,6 +55,11 @@ class RegionOfInterest(QWidget):
         # start with the same state as the main player
         if play:
             self.roi_displayer.play_toolButton.setChecked(play)
+        # else:
+        #     self.controller.get_viewport_roi(single_run = True)
+        #     while self.model.roi_image_queue.empty():
+        #         pass
+        #     self.show_roi_frame()
 
     def _create_timer_thread(self):
         """Creating TimerWorker and timer for ROI frame display"""
@@ -128,4 +133,5 @@ class RegionOfInterest(QWidget):
 
         else:
             # no, pause the display..
+            self.model.capturing_roi.value = False
             self.stop_timer.emit()

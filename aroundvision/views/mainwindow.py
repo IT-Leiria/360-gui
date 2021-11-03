@@ -66,7 +66,7 @@ class MainWindow(QMainWindow):
 
         # main settings
         self.installEventFilter(self)
-        self.showMaximized()
+        #self.showMaximized()
 
         self.track_button.hide()
 
@@ -123,10 +123,10 @@ class MainWindow(QMainWindow):
         :type projection: str"""
         is_cube = projection == CONF.cube_proj_name["name"]
         self.cube_comboBox.setEnabled(is_cube)
-        
+
     def stream_qualities(self, qualities) -> None:
         """Set quality combobox items
-        
+
         :param qualities: list with qualities to be displayed
         :type qualities: list"""
         # clear existing entries and apend the new
@@ -142,7 +142,7 @@ class MainWindow(QMainWindow):
 
     def projections_list(self, projections) -> None:
         """Update quality combobox items
-        
+
         :param projections: dict with qualities to be displayed
         :type projections: dict"""
         # update available projections. it won't be used regularly since the projections are only received when starting the application
@@ -152,7 +152,7 @@ class MainWindow(QMainWindow):
 
     def main_capture(self, capturing) -> None:
         """Enable or disable projections and quality combo boxes when capturing or not
-        
+
         :param capturing: capturing frames
         :type capturing: bool"""
         # disable projections combobox while capturing
@@ -161,7 +161,7 @@ class MainWindow(QMainWindow):
 
     def bitrate_changed(self, bitrate) -> None:
         """Update bitrate label
-        
+
         :param bitrate: bitrate of current projection/quality
         :type bitrate: int"""
         self.bitrate_label.setText("Bitrate: " + str(bitrate))
@@ -193,16 +193,18 @@ class MainWindow(QMainWindow):
             self.model.selected_projection_api.value = \
                 str([p["proj_api_name"] for p in self.projections if p["proj_name"] == projection][0])
             # get_frame_info from API in order to update the frame info
-            if self.model.selected_projection_api.value != CONF.cube_proj_name["api_name"]:
-                self.model.selected_cube_face.value = ""
-                self.controller.get_frame_info()
-            else:
-                self.model.selected_cube_face.value = self.cube_comboBox.currentText()
+            self.model.selected_cube_face.value = self.cube_comboBox.currentText()
+            if self.model.selected_projection_api.value == CONF.cube_proj_name["api_name"] and \
+                    self.model.selected_cube_face.value != CONF.faces_cube[0]:
                 self.controller.get_projection_face_info()
+            else:
+                self.model.selected_cube_face.value = CONF.faces_cube[0]
+                self.controller.get_frame_info()
+
             # clear queue when projection is changed
             with self.model.image_queue.mutex:
                 self.model.image_queue.queue.clear()
-    
+
     @pyqtSlot(int)
     def change_quality(self, quality):
         """slot: change quality in model when user change quality in combobox."""
@@ -212,7 +214,14 @@ class MainWindow(QMainWindow):
     def change_cube_face(self, cube_face):
         """slot: change cube face in model when user change cube face in combobox."""
         self.model.selected_cube_face.value = cube_face
-        self.controller.get_projection_face_info()
+        if self.model.selected_cube_face.value == CONF.faces_cube[0]:
+            self.controller.get_frame_info()
+        else:
+            self.controller.get_projection_face_info()
+
+        # clear queue when projection is changed
+        with self.model.image_queue.mutex:
+            self.model.image_queue.queue.clear()
 
     @pyqtSlot()
     def open_load_source(self):

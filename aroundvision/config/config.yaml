@@ -14,7 +14,7 @@ ui_configs:
   roi_settings: "roi_settings.ui"
   about_window: "about.ui"
 api_configs:
-  api_endpoint: "http://0.0.0.0:5000/"
+  api_endpoint: "http://zeus.itleiria.pt:5000/"
   api_stream_list_path: "get_stream_list"
   api_select_stream_path: "select_stream"
   api_get_frame_info: "get_frame_info"
@@ -30,12 +30,13 @@ cube_projection:
   name: "Cube-map projection"
   api_name: "CMP"
 faces_cube:
-  - "1"
-  - "2"
-  - "3"
-  - "4"
-  - "5"
-  - "6"
+  - "Full"
+  - "Left"
+  - "Front"
+  - "Right"
+  - "Bottom"
+  - "Back"
+  - "Top"
 roi_bitrate_value: "22"
 roi_bitrate_units: "Mbits/s"
 icons:

@@ -32,6 +32,7 @@ class Controller(object):
 
         self.get_projection_list()
 
+
     def get_frame_from_api(self):
         """While we are capturing values (model.capturing = True) we will
         get frames from API and store them in model.image.queue.
@@ -39,15 +40,17 @@ class Controller(object):
         while self.model.main_capturing.value:
             logger.info("Get frame from API : " + self.model.api_endpoint.value)
 
-            path = CONF.api_get_frame_raw_path if self.model.selected_projection_api.value != CONF.cube_proj_name["api_name"] else CONF.api_get_face_raw_path
+            path = CONF.api_get_frame_raw_path if self.model.selected_cube_face.value == CONF.faces_cube[0] else CONF.api_get_face_raw_path
+
             # Build request
             request = self.model.api_endpoint.value + path + "?projection=" + \
                                        self.model.selected_projection_api.value
+
             if self.model.selected_quality.value != -1:
                 request = request + "&layer=" + str(self.model.selected_quality.value)
 
-            if self.model.selected_projection_api.value == CONF.cube_proj_name["api_name"]:
-                request = request + "&face=" + str(self.model.selected_cube_face.value)
+            if self.model.selected_projection_api.value != CONF.faces_cube[0]:
+                request = request + "&face=" + str(self.get_cube_face_idx())
 
             # Get frame
             r = urllib.request.urlopen(request)
@@ -105,12 +108,13 @@ class Controller(object):
             url = url + "&layer=" + str(layer)
 
         return url
-    def get_viewport_roi(self):
+    def get_viewport_roi(self, single_run = False):
         """Get viewport region of interest."""
         # get url for get viewport raw
         url = self._get_url_for_roi(CONF.api_get_viewport_raw)
 
-        while self.model.capturing_roi.value:
+        while self.model.capturing_roi.value or single_run:
+            single_run = False
             logger.info("Get viewport region of interest from API : " + self.model.api_endpoint.value)
 
             # Get viewport
@@ -182,9 +186,17 @@ class Controller(object):
             self.model.main_bitrate.value = frame_info["bitrate"]
             logger.info("Get frame info status {0}!".format(r["status_code"]))
 
+    def get_cube_face_idx(self) -> int:
+        idx = -1
+        for face in CONF.faces_cube:
+            if face == self.model.selected_cube_face.value:
+                return idx
+            idx += 1
+        return -1
+
     def get_projection_face_info(self):
         get_frame_info_path = self.model.api_endpoint.value + "get_projection_face_info" + \
-            "?projection=" + self.model.selected_projection_api.value + "&face=" + self.model.selected_cube_face.value + "&layer=" + str(self.model.selected_quality.value)
+            "?projection=" + self.model.selected_projection_api.value + "&face=" + str(self.get_cube_face_idx()) + "&layer=" + str(self.model.selected_quality.value)
         logger.info("Getting frame info in API {0}".format(get_frame_info_path))
 
         r = self.api_client.create_request("get", get_frame_info_path)
@@ -245,10 +257,8 @@ class Controller(object):
             # yes, update the values in the model
             qualities = []
             for i, s in enumerate(literal_eval(r["content"].decode())):
-                # manipulate content which is formatted like: 
-                start = s[1].find("Quality: ") + 9
-                end = s[1].find(" |")
-                qualities.append(s[1][start:end])
+                # manipulate content which is formatted like:
+                qualities.append(s[1])
             self.model.stream_qualities.value = qualities
         else:
             self.model.selected_quality.value = -1

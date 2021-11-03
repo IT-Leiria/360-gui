@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1555</width>
+    <width>1578</width>
     <height>566</height>
    </rect>
   </property>
@@ -186,7 +186,7 @@ QPushButton:checked {
           <widget class="QComboBox" name="proj_comboBox">
            <property name="minimumSize">
             <size>
-             <width>230</width>
+             <width>250</width>
              <height>0</height>
             </size>
            </property>
@@ -215,7 +215,7 @@ QPushButton:checked {
          <item row="0" column="0">
           <widget class="QLabel" name="quality_label">
            <property name="text">
-            <string>Quality</string>
+            <string>Layer</string>
            </property>
           </widget>
          </item>
@@ -223,12 +223,12 @@ QPushButton:checked {
           <widget class="QComboBox" name="quality_comboBox">
            <property name="minimumSize">
             <size>
-             <width>120</width>
+             <width>250</width>
              <height>0</height>
             </size>
            </property>
            <property name="sizeAdjustPolicy">
-            <enum>QComboBox::AdjustToMinimumContentsLengthWithIcon</enum>
+            <enum>QComboBox::AdjustToContents</enum>
            </property>
           </widget>
          </item>
@@ -294,8 +294,8 @@ QPushButton:checked {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1555</width>
-     <height>22</height>
+     <width>1578</width>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuLoad_Source">
