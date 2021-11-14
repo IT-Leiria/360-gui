@@ -114,6 +114,7 @@ class RegionOfInterest(QWidget):
 
     def closeEvent(self, event) -> None:
         self.model.clean_roi_model()
+        self.stop_timer.emit()
         super(RegionOfInterest, self).closeEvent(event)
 
     @pyqtSlot()
