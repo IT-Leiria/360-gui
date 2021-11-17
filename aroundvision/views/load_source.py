@@ -69,10 +69,8 @@ class LoadSource(QWidget):
 
             # add Row for values: index, name, size, bytes per pixel, number of layers
             stream = self.model.stream_list.value[s]
-            form.addRow(QLabel("Stream Index: "), QLabel(str(i)))
-            form.addRow(QLabel("Name: "), QLabel(stream["name"]))
-            form.addRow(QLabel("Size: "), QLabel(str(stream["width"]) + " x " + str(stream["height"])))
-            form.addRow(QLabel("Bytes per Pixel: "), QLabel(str(stream["bytes_per_pixel"])))
+            form.addRow(QLabel("[ID] Name: "), QLabel("[" + str(i) + "] " + stream["name"]))
+            form.addRow(QLabel("Resolution: "), QLabel(str(stream["width"]) + "x" + str(stream["height"]) + "@" + str(stream["bytes_per_pixel"]*8) + "bpp"))
             form.addRow(QLabel("Number of layers: "), QLabel(str(stream["number_of_layers"])))
 
             # add to layout
