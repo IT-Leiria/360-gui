@@ -120,18 +120,16 @@ class Controller(object):
             # Get viewport
             try:
                 r = urllib.request.urlopen(url, timeout=2)
+                content = r.read()
+                size_content = len(content)
+                logger.info("Request Status: {}!".format(str(r.status)))
+                # Is the content has the expected size?
+                if size_content == self.model.roi_frame_len.value:
+                    logger.info("The roi frame has the expected size, let's insert it in the images queue!")
+                    self.model.roi_image_queue.put(self.get_rgb_from_yuv(content, self.model.roi_shape.value))
             except timeout as e:
                 logger.info("ROI frame request timeout. Stopping capture.")
                 self.model.capturing_roi.value = False
-
-            content = r.read()
-            size_content = len(content)
-            logger.info("Request Status: {}!".format(str(r.status)))
-
-            # Is the content has the expected size?
-            if size_content == self.model.roi_frame_len.value:
-                logger.info("The roi frame has the expected size, let's insert it in the images queue!")
-                self.model.roi_image_queue.put(self.get_rgb_from_yuv(content, self.model.roi_shape.value))
 
     def get_viewport_roi_info(self):
         """Get viewport regiont of interest info"""
